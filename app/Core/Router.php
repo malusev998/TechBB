@@ -16,6 +16,8 @@ class Router
 {
     protected RouteCollection $routes;
 
+//    protected static array $reservedKeys = ['_controller' => 1, '_route' => 2];
+
     public function __construct(RouteCollection $routes)
     {
         $this->routes = $routes;
@@ -26,7 +28,6 @@ class Router
         $fileLocator = new FileLocator([__DIR__.'/../../routes']);
 
         $phpFileLoader = new PhpFileLoader($fileLocator);
-
         $collection = $phpFileLoader->load($file);
         $collection->addPrefix($prefix);
         $collection->addNamePrefix($namePrefix);
@@ -38,12 +39,12 @@ class Router
 
     public function api(): Router
     {
-        return $this->addRoutes('api.php', 'api', 'api');
+        return $this->addRoutes('api.php', 'api', 'api-');
     }
 
     public function web(): Router
     {
-        return $this->addRoutes('web.php', 'api', 'api');
+        return $this->addRoutes('web.php', '', '');
     }
 
 
@@ -52,8 +53,21 @@ class Router
         $request = Request::createFromGlobals();
         $context = (new RequestContext())
             ->fromRequest($request);
-        return (new UrlMatcher($this->routes, $context))
-            ->matchRequest($request);
+
+        $data = (new UrlMatcher($this->routes, $context))->matchRequest($request);
+        $controller = $data['_controller'];
+        $route = $data['_route'];
+
+        unset($data['_controller'], $data['_route']);
+
+
+        return [
+            'params'          => $data,
+            'controller'      => $controller,
+            'route'           => $route,
+            'request'         => $request,
+            'request_context' => $context,
+        ];
     }
 
 }

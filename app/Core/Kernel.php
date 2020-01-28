@@ -3,7 +3,6 @@
 
 namespace App\Core;
 
-
 use DI\ContainerBuilder;
 use App\Core\Parser\ActionParser;
 use Psr\Container\ContainerInterface;
@@ -12,6 +11,7 @@ use App\Core\Formatters\BasicFormatter;
 use App\Core\Resolvers\ControllerResolver;
 use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\HttpFoundation\Response;
+
 
 abstract class Kernel
 {
@@ -45,6 +45,10 @@ abstract class Kernel
             ->useAutowiring(true)
             ->useAnnotations(false);
 
+//        if()
+//        {
+//
+//        }
 
         return $containerBuilder->build();
     }

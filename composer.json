@@ -26,7 +26,9 @@
         "symfony/dependency-injection": "^5.0",
         "nesbot/carbon": "^2.29",
         "symfony/http-foundation": "^5.0",
-        "php-di/php-di": "^6.0"
+        "php-di/php-di": "^6.0",
+        "illuminate/database": "^6.12",
+        "illuminate/pagination": "^6.12"
     },
     "prefer-stable": true,
     "autoload": {

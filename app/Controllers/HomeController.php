@@ -8,7 +8,7 @@ use App\Contracts\Hasher;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class HomeController
+class HomeController extends ApiController
 {
     public function __construct(Hasher $hasher) { }
 
@@ -19,6 +19,6 @@ class HomeController
 
     public function singlePost(Request $request, $name)
     {
-        return Response::create(json_encode(['name' => $name]), 201, ['Content-Type' => 'application/json']);
+        return $this->ok(['name' => $name]);
     }
 }

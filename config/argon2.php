@@ -1,0 +1,6 @@
+<?php
+
+return [
+    'ops_limit' => SODIUM_CRYPTO_PWHASH_OPSLIMIT_INTERACTIVE,
+    'mem_limit' => SODIUM_CRYPTO_PWHASH_MEMLIMIT_INTERACTIVE
+];

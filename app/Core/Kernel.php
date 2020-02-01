@@ -52,7 +52,8 @@ abstract class Kernel
 
         foreach ($files as $file) {
             if (preg_match('#\.php$#', $file)) {
-                $deps = require $directory . DIRECTORY_SEPARATOR . $file;
+                $path = $directory . DIRECTORY_SEPARATOR . $file;
+                $deps = require $path;
                 $containerBuilder
                     ->addDefinitions($deps);
             }

@@ -4,12 +4,26 @@
 namespace App\Controllers\Auth;
 
 
+use App\Contracts\LoginContract;
 use App\Controllers\ApiController;
+use Symfony\Component\HttpFoundation\Request;
 
 class LoginController extends ApiController
 {
-    public function login()
-    {
+    protected LoginContract $loginService;
 
+    /**
+     * LoginController constructor.
+     *
+     * @param  \App\Contracts\LoginContract  $loginService
+     */
+    public function __construct(LoginContract $loginService)
+    {
+        $this->loginService = $loginService;
+    }
+
+
+    public function login(Request $request)
+    {
     }
 }

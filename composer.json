@@ -29,7 +29,8 @@
     "illuminate/database": "^6.12",
     "illuminate/pagination": "^6.12",
     "php-di/php-di": "^6.0",
-    "ext-redis": "*"
+    "ext-redis": "*",
+    "rakit/validation": "^1.2"
   },
   "prefer-stable": true,
   "autoload": {

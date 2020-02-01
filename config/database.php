@@ -37,7 +37,5 @@ return [
             get('redis_database'),
             get('redis_prefix')
         ),
-    ,
-
     Manager::class => static fn () => $manager,
 ];

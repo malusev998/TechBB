@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\Core\Parser;
+namespace App\Core\Contracts;
 
 
 interface Parser

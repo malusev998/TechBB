@@ -4,6 +4,7 @@
 namespace App\Core;
 
 
+use Closure;
 use DI\ContainerBuilder;
 use App\Core\Parser\ActionParser;
 use Psr\Container\ContainerInterface;
@@ -21,9 +22,12 @@ abstract class Kernel
 
     protected string $controllerDelimiter = '@';
 
+    private Environment $env;
+
     public function __construct(string $prefix = '/')
     {
         $routes = new RouteCollection();
+        $this->env = new Environment();
         $routes->addPrefix($prefix);
         $routes->addNamePrefix('');
         $this->router = new Router($routes);
@@ -37,14 +41,21 @@ abstract class Kernel
     private function injection(): ContainerInterface
     {
         $containerBuilder = new ContainerBuilder();
+        $containerBuilder->useAutowiring(true);
+        $containerBuilder->useAnnotations(false);
 
-        $deps = require __DIR__.'/../../config/dependency.php';
+        $directory = __DIR__.'/../../config';
 
-        $containerBuilder
-            ->addDefinitions($deps)
-            ->useAutowiring(true)
-            ->useAnnotations(false);
+        $files = scandir($directory);
 
+
+        foreach ($files as $file) {
+            if (preg_match('#\.php$#', $file)) {
+                $deps = require $directory.DIRECTORY_SEPARATOR.$file;
+                $containerBuilder
+                    ->addDefinitions($deps);
+            }
+        }
 
         return $containerBuilder->build();
     }
@@ -70,7 +81,7 @@ abstract class Kernel
         [$controller, $action] = (new ActionParser($this->controllerNamespace, $this->controllerDelimiter))
             ->parse($data['controller']);
 
-        $controllerInstance = (new ControllerResolver($controller))
+        $controllerInstance = (new ControllerResolver($controller, $data['request']))
             ->resolve($container);
         ob_start();
         $response = (new ActionResolver($controllerInstance, $action, $data['request'], $data['params']))
@@ -83,5 +94,17 @@ abstract class Kernel
         }
         // Output the buffer
         Response::closeOutputBuffers(10, true);
+    }
+
+    public function setEnvironment(string $env): Kernel
+    {
+        $this->env->setEnv($env);
+        return $this;
+    }
+
+    public function setCustomEnvironmentHandler(Closure $closure): Kernel
+    {
+        $this->env->setCustomHandler($closure);
+        return $this;
     }
 }

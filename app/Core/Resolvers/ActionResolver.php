@@ -64,10 +64,6 @@ class ActionResolver implements Resolver
                 $invokeParams[] = array_shift($this->params);
             }
         }
-//
-//        if(count($params) !== count($invokeParams)) {
-//            throw new \RuntimeException('Invalid Number of parameters passed');
-//        }
 
         return $reflex->invokeArgs($this->controllerInstance, $invokeParams);
     }

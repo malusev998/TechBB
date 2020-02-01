@@ -5,6 +5,7 @@ namespace App\Core\Parser;
 
 
 use Error;
+use App\Core\Contracts\Parser;
 use App\Core\Exceptions\ControllerNotFoundException;
 
 class ActionParser implements Parser
@@ -32,10 +33,12 @@ class ActionParser implements Parser
     {
         if (is_string($data)) {
             [$controller, $action] = explode($this->delimiter, $data);
-        } else if (is_array($data)) {
-            [$controller, $action] = $data;
         } else {
-            throw new Error('Invalid type for controller and action, only string and arrays are accepted');
+            if (is_array($data)) {
+                [$controller, $action] = $data;
+            } else {
+                throw new Error('Invalid type for controller and action, only string and arrays are accepted');
+            }
         }
 
         if (class_exists($controller)) {

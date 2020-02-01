@@ -24,5 +24,8 @@ class LoginService implements LoginContract
 
     public function login(array $data)
     {
+        ['email' => $email, 'password' => $password] = $data;
+
+        Us
     }
 }

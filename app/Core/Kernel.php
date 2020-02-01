@@ -14,6 +14,7 @@ use App\Core\Resolvers\ControllerResolver;
 use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\HttpFoundation\Response;
 
+
 abstract class Kernel
 {
     protected Router $router;
@@ -44,14 +45,14 @@ abstract class Kernel
         $containerBuilder->useAutowiring(true);
         $containerBuilder->useAnnotations(false);
 
-        $directory = __DIR__.'/../../config';
+        $directory = __DIR__ . '/../../config';
 
         $files = scandir($directory);
 
 
         foreach ($files as $file) {
             if (preg_match('#\.php$#', $file)) {
-                $deps = require $directory.DIRECTORY_SEPARATOR.$file;
+                $deps = require $directory . DIRECTORY_SEPARATOR . $file;
                 $containerBuilder
                     ->addDefinitions($deps);
             }
@@ -65,9 +66,6 @@ abstract class Kernel
         $this->handle();
         return $this->router->handle();
     }
-
-
-    abstract protected function handle();
 
     /**
      * @throws \App\Core\Exceptions\ControllerNotFoundException
@@ -107,4 +105,6 @@ abstract class Kernel
         $this->env->setCustomHandler($closure);
         return $this;
     }
+
+    abstract protected function handle();
 }

@@ -6,7 +6,6 @@ use BrosSquad\DotEnv\Exceptions\EnvNotParsed;
 use BrosSquad\DotEnv\Exceptions\DotEnvSyntaxError;
 use BrosSquad\DotEnv\Exceptions\EnvVariableNotFound;
 
-
 require_once __DIR__.'/../vendor/autoload.php';
 
 $dotnev = new EnvParser(__DIR__.'../.env');
@@ -21,4 +20,6 @@ try {
 } catch (EnvVariableNotFound $e) {
 } catch (EnvNotParsed $e) {
 } catch (Throwable $e) {
+} catch (Throwable $e) {
+    dump($e);
 }

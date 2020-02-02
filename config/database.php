@@ -15,7 +15,7 @@ $connections = [
         'charset'   => $_ENV['DATABASE_CHARSET'] ?? 'utf8',
         'collation' => 'utf8_unicode_ci',
         'prefix'    => $_ENV['DATABASE_PREFIX'] ?? '',
-    ]
+    ],
 ];
 
 $manager = new Manager();
@@ -33,9 +33,9 @@ return [
     TechBBRedis::class => create(TechBBRedis::class)
         ->constructor(
             get('redis_host'),
-            get('redis_post'),
+            get(    'redis_post'),
             get('redis_database'),
             get('redis_prefix')
         ),
-    Manager::class => static fn () => $manager,
+    Manager::class     => $manager,
 ];

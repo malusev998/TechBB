@@ -5,12 +5,16 @@ namespace App\Core;
 
 
 use Closure;
+use Throwable;
 use DI\ContainerBuilder;
+use ReflectionException;
+use App\Core\Exceptions\Handler;
 use App\Core\Parser\ActionParser;
 use Psr\Container\ContainerInterface;
 use App\Core\Resolvers\ActionResolver;
 use App\Core\Formatters\BasicFormatter;
 use App\Core\Resolvers\ControllerResolver;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -45,14 +49,14 @@ abstract class Kernel
         $containerBuilder->useAutowiring(true);
         $containerBuilder->useAnnotations(false);
 
-        $directory = __DIR__ . '/../../config';
+        $directory = __DIR__.'/../../config';
 
         $files = scandir($directory);
 
 
         foreach ($files as $file) {
             if (preg_match('#\.php$#', $file)) {
-                $path = $directory . DIRECTORY_SEPARATOR . $file;
+                $path = $directory.DIRECTORY_SEPARATOR.$file;
                 $deps = require $path;
                 $containerBuilder
                     ->addDefinitions($deps);
@@ -68,31 +72,39 @@ abstract class Kernel
         return $this->router->handle();
     }
 
-    /**
-     * @throws \App\Core\Exceptions\ControllerNotFoundException
-     * @throws \Throwable
-     */
     final public function run(): void
     {
-        $container = $this->injection();
-        $data = $this->route();
+        try {
+            $container = $this->injection();
+            $data = $this->route();
 
-        [$controller, $action] = (new ActionParser($this->controllerNamespace, $this->controllerDelimiter))
-            ->parse($data['controller']);
+            [$controller, $action] = (new ActionParser($this->controllerNamespace, $this->controllerDelimiter))
+                ->parse($data['controller']);
 
-        $controllerInstance = (new ControllerResolver($controller, $data['request']))
-            ->resolve($container);
-        ob_start();
-        $response = (new ActionResolver($controllerInstance, $action, $data['request'], $data['params']))
-            ->resolve($container);
-        $response = (new BasicFormatter($data['request']))->format($response);
-
-        if ($response !== null) {
-            echo $response;
-            return;
+            $controllerInstance = (new ControllerResolver($controller, $data['request']))
+                ->resolve($container);
+            ob_start();
+            $response = (new ActionResolver($controllerInstance, $action, $data['request'], $data['params']))
+                ->resolve($container);
+            $response = (new BasicFormatter($data['request']))->format($response);
+        } catch (
+        Exceptions\ControllerNotFoundException |
+        Exceptions\IoCContainerException |
+        Exceptions\ValidationException |
+        ReflectionException |
+        Throwable $e
+        ) {
+            $request = $data['request'] ?? (Request::createFromGlobals());
+            $response = (new Handler($container, $request))->handle($e);
+            $response = (new  BasicFormatter($request))->format($response);
         }
-        // Output the buffer
-        Response::closeOutputBuffers(10, true);
+        finally {
+            if ($response !== null) {
+                echo $response;
+                return;
+            }
+            Response::closeOutputBuffers(10, true);
+        }
     }
 
     public function setEnvironment(string $env): Kernel

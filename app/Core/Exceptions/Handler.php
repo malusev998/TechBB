@@ -49,7 +49,8 @@ class Handler
 
     private function handleResponse(int $status, $data): ?Response
     {
-        if ($this->request->isXmlHttpRequest()) {
+        $accept = $this->request->getAcceptableContentTypes();
+        if (in_array('application/json', $accept, true)) {
             return new Response(
                 json_encode($data, JSON_THROW_ON_ERROR, 512), $status, [
                                                                 'Content-Type' => 'application/json',

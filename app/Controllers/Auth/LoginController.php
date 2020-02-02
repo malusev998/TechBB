@@ -4,6 +4,7 @@
 namespace App\Controllers\Auth;
 
 
+use App\Dto\LoginDto;
 use App\Contracts\LoginContract;
 use App\Controllers\ApiController;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,7 +24,7 @@ class LoginController extends ApiController
     }
 
 
-    public function login(Request $request)
+    public function login(LoginDto $loginDto, Request $request)
     {
     }
 }

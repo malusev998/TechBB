@@ -28,7 +28,8 @@ class DtoValidate
      */
     public function validate(string $class): BaseDto
     {
-        if ($this->request->isXmlHttpRequest() || $this->request->getContentType() === 'application/json') {
+        // Check if content type begins with application/json
+        if (strpos($this->request->getContentType(), 'application/json') === 0) {
             $data = json_decode($this->request->getContent(), true, 512, JSON_THROW_ON_ERROR);
         } else {
             $data = $_POST;

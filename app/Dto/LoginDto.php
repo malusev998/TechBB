@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App;
+namespace App\Dto;
 
 
 use App\Core\BaseDto;
@@ -19,4 +19,12 @@ class LoginDto extends BaseDto
     protected array $allowed = [
         'email', 'password'
     ];
+
+    public function validate(): array
+    {
+        return [
+            'email' => 'required|email|max:150',
+            'password' => 'required'
+        ];
+    }
 }

@@ -8,7 +8,7 @@ require_once __DIR__.'/../vendor/autoload.php';
 
 $dotnev = new EnvParser(__DIR__.'/../.env');
 $kernel = (new Kernel())
-    ->setEnvironment($_SERVER['TECHBB_ENVIRONMENT'] ?? 'development');
+    ->setEnvironment(getApplicationEnvironment());
 
 try {
     $dotnev->parse();
@@ -19,4 +19,5 @@ try {
     echo 'Not Found';
 } catch (Throwable $e) {
     echo get_class($e);
+    echo $e->getMessage();
 }

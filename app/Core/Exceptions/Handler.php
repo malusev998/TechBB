@@ -8,7 +8,7 @@ use Throwable;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Exception\NoConfigurationException;
+use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 
 class Handler
 {
@@ -26,42 +26,56 @@ class Handler
         }
     }
 
+    public function customExceptionHandler(Throwable $e): ?Response
+    {
+        $handlers = $this->container->get('error_handlers');
+        if (isset($handlers[get_class($e)])) {
+            /** @var \App\Core\Contracts\ExceptionHandlerInterface $instance */
+            $instance = $this->container->get($handlers[get_class($e)]);
+
+            return $instance->handle($this->request, $e);
+        }
+
+        return null;
+    }
 
     public function handle(Throwable $e): ?Response
     {
-        if ($e instanceof NoConfigurationException) {
-            return $this->handleResponse(404, '');
+        // Custom exception handlers
+        if ($this->container->has('error_handlers') && ($res = $this->customExceptionHandler($e)) !== null) {
+            return $res;
         }
 
+        // Route not found exception
+        if ($e instanceof ResourceNotFoundException) {
+            return $this->handleResponse(Response::HTTP_NOT_FOUND, ['message' => 'Page is not found']);
+        }
+
+        // Validation exception
         if ($e instanceof ValidationException) {
             return $this->handleResponse(
-                422,
+                Response::HTTP_UNPROCESSABLE_ENTITY,
                 [
                     'errors' => $e->getErrors(),
                 ]
             );
         }
 
-        // TODO: Add support for custom error handlers
-
-        return $this->handleResponse(500, ['message' => 'An Error has occurred']);
+        // Any other exception
+        return $this->handleResponse(Response::HTTP_INTERNAL_SERVER_ERROR, ['message' => 'An Error has occurred']);
     }
 
-    private function handleResponse(int $status, $data): ?Response
+    private function handleResponse(int $status, $data, $headers = []): ?Response
     {
         $accept = $this->request->getAcceptableContentTypes();
-        if (in_array('application/json', $accept, true)) {
-            return new Response(
-                json_encode($data, JSON_THROW_ON_ERROR, 512), $status, [
-                                                                'Content-Type' => 'application/json',
-                                                            ]
-            );
+        if (!isset($headers['Content-Type'])) {
+            $headers['Content-Type'] = 'text/html';
+        }
+        if (is_array($data) || in_array('application/json', $accept, true)) {
+            $data = json_encode($data, JSON_THROW_ON_ERROR, 512);
+            $headers['Content-Type'] = 'application/json';
         }
 
-        return new Response(
-            $data, $status, [
-                     'Content-Type' => 'text/html',
-                 ]
-        );
+        return new Response($data, $status, $headers);
     }
 }

@@ -49,6 +49,10 @@ abstract class Kernel
         $containerBuilder->useAutowiring(true);
         $containerBuilder->useAnnotations(false);
 
+        if(getApplicationEnvironment() === 'production') {
+            $containerBuilder->enableDefinitionCache(__DIR__ . '/../../.cache/php_di_cache');
+        }
+
         $directory = __DIR__.'/../../config';
 
         $files = scandir($directory);
@@ -99,7 +103,7 @@ abstract class Kernel
             $response = (new  BasicFormatter($request))->format($response);
         }
         finally {
-            if ($response !== null) {
+            if (isset($response)) {
                 echo $response;
                 return;
             }

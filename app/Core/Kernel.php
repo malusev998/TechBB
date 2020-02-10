@@ -43,7 +43,7 @@ abstract class Kernel
      * @throws \Exception
      * @return \Psr\Container\ContainerInterface
      */
-    private function injection(): ContainerInterface
+    final protected function injection(): ContainerInterface
     {
         $containerBuilder = new ContainerBuilder();
         $containerBuilder->useAutowiring(true);
@@ -72,11 +72,14 @@ abstract class Kernel
 
     private function route(): array
     {
-        $this->handle();
+        $this->boot();
         return $this->router->handle();
     }
 
-    final public function run(): void
+    /**
+     * @return mixed
+     */
+    public function run()
     {
         try {
             $container = $this->injection();
@@ -123,5 +126,5 @@ abstract class Kernel
         return $this;
     }
 
-    abstract protected function handle();
+    abstract protected function boot();
 }

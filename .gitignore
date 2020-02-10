@@ -3,3 +3,8 @@ vendor/
 .vscode/
 node_modules/
 .env
+keys/
+
+.phpunit.result.cache
+.env.*
+!.env.example

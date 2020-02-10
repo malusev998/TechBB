@@ -30,7 +30,14 @@
     "illuminate/pagination": "^6.12",
     "php-di/php-di": "^6.0",
     "ext-redis": "*",
-    "rakit/validation": "^1.2"
+    "rakit/validation": "^1.2",
+    "ocramius/proxy-manager": "^2.7",
+    "web-token/jwt-checker": "^2.1",
+    "web-token/jwt-key-mgmt": "^2.1"
+  },
+  "require-dev": {
+    "symfony/var-dumper": "^5.0",
+    "phpunit/phpunit": "^9.0"
   },
   "prefer-stable": true,
   "autoload": {
@@ -41,7 +48,12 @@
       "helpers.php"
     ]
   },
-  "require-dev": {
-    "symfony/var-dumper": "^5.0"
+  "autoload-dev": {
+    "psr-4": {
+      "App\\Tests\\": "tests/"
+    },
+    "files": [
+      "helpers.php"
+    ]
   }
 }

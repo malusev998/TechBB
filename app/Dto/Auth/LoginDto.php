@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\Dto;
+namespace App\Dto\Auth;
 
 
 use App\Core\BaseDto;
@@ -23,7 +23,7 @@ class LoginDto extends BaseDto
     public function validate(): array
     {
         return [
-            'email' => 'required|email|max:150',
+            'email' => 'required',
             'password' => 'required'
         ];
     }

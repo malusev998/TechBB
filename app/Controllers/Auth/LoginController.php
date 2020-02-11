@@ -4,10 +4,11 @@
 namespace App\Controllers\Auth;
 
 
-use App\Dto\LoginDto;
-use App\Contracts\LoginContract;
+use Throwable;
+use App\Dto\Auth\LoginDto;
+use App\Contracts\Auth\LoginContract;
 use App\Controllers\ApiController;
-use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class LoginController extends ApiController
 {
@@ -16,7 +17,7 @@ class LoginController extends ApiController
     /**
      * LoginController constructor.
      *
-     * @param  \App\Contracts\LoginContract  $loginService
+     * @param  \App\Contracts\Auth\LoginContract  $loginService
      */
     public function __construct(LoginContract $loginService)
     {
@@ -24,7 +25,13 @@ class LoginController extends ApiController
     }
 
 
-    public function login(LoginDto $loginDto, Request $request)
+    public function login(LoginDto $loginDto): ?Response
     {
+        try {
+            $data = $this->loginService->login($loginDto);
+            return $this->ok($data);
+        }catch (Throwable $e) {
+            return $this->badRequest($e->getMessage());
+        }
     }
 }

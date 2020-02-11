@@ -1,7 +1,7 @@
 <?php
 
-use App\Services\LoginService;
-use App\Contracts\LoginContract;
+use App\Services\Auth\LoginService;
+use App\Contracts\Auth\LoginContract;
 
 use function DI\autowire;
 

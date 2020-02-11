@@ -14,7 +14,12 @@ class CreateUsersTable extends AbstractMigration
             ->addColumn('email_verified_at', 'datetime', ['null' => true])
             ->addColumn('created_at', 'datetime', ['null' => true])
             ->addColumn('updated_at', 'datetime', ['null' => true])
+            ->addColumn('role_id', 'integer', ['signed' => false])
             ->addIndex('email', ['unique' => true])
+            ->addForeignKey('role_id', 'roles', 'id', [
+                'update' => 'cascade',
+                'delete' => 'cascade'
+            ])
             ->create();
     }
 }

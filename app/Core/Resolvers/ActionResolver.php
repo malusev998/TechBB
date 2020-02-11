@@ -41,6 +41,7 @@ class ActionResolver implements Resolver
      */
     public function resolve(ContainerInterface $container)
     {
+
         if ($this->controllerInstance === null) {
             throw new IoCContainerException();
         }
@@ -56,22 +57,20 @@ class ActionResolver implements Resolver
             if ($param->hasType()) {
                 $paramType = $param->getType();
             }
+
             if ($paramName === 'request' || (isset($paramType) && $paramType->getName() === Request::class)) {
                 $invokeParams[] = $this->request;
             }
 
 
-            if (($parent = $param->getClass()->getParentClass()) !== null && $parent->getName() === BaseDto::class) {
-                $invokeParams[] = (new DtoValidate($container, $this->request))->validate($parent->getName());
+            if (($parent = $param->getClass()->getParentClass()) && $parent->getName() === BaseDto::class) {
+                $invokeParams[] = (new DtoValidate($container, $this->request))->validate($paramType);
             }
 
             if (isset($this->params[$paramName])) {
                 $invokeParams[] = $this->params[$paramName];
-            } else {
-                $invokeParams[] = array_shift($this->params);
             }
         }
-
         return $reflex->invokeArgs($this->controllerInstance, $invokeParams);
     }
 }

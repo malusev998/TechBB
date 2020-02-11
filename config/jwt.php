@@ -29,13 +29,12 @@ return [
         'mandatory_headers' => ['alg'],
     ],
     'keys'                      => [
-        'public'  => $_ENV['TECHBB_PUBLIC_KEY'],
-        'private' => $_ENV['TECHBB_PRIVATE_KEY'],
-        'pass'    => $_ENV['TECHBB_PASSWORD'],
+        'public'  => $_ENV['TECHBB_PUBLIC_KEY'] ?? __DIR__ . '/../keys/public.pem',
+        'private' => $_ENV['TECHBB_PRIVATE_KEY'] ?? __DIR__ . '/../keys/private.pem',
+        'pass'    => $_ENV['TECHBB_PASSWORD'] ?? null,
     ],
-    'issuer'                    => $_ENV['TECHBB_JWT_ISSUER'],
-    'audience'                  => $_ENV['TECHBB_JWT_AUDIENCE'],
-    'expires_at'                => CarbonInterval::minutes(120),
+    'issuer'                    => $_ENV['TECHBB_JWT_ISSUER'] ?? 'http://localhost',
+    'audience'                  => $_ENV['TECHBB_JWT_AUDIENCE'] ?? 'http://localhost:4200',
     AlgorithmManager::class     => create(AlgorithmManager::class)->constructor(get('algorithms')),
     JWSVerifier::class          => create(JWSVerifier::class)->constructor(get(AlgorithmManager::class)),
     JWSSerializerManager::class => create(JWSSerializerManager::class)->constructor([new CompactSerializer()]),
@@ -44,7 +43,7 @@ return [
             new IssuedAtChecker(),
             new NotBeforeChecker(),
             new ExpirationTimeChecker(),
-            new AudienceChecker($_ENV['TECHBB_JWT_AUDIENCE']),
+            new AudienceChecker($_ENV['TECHBB_JWT_AUDIENCE'] ?? 'http://localhost:4200'),
         ]
     ),
 
@@ -65,4 +64,10 @@ return [
             get(AlgorithmManager::class),
             get('expires_at')
         ),
+
+    /**
+     * Jwt expiration
+     */
+    'expires_at'                => CarbonInterval::minutes(120),
+
 ];

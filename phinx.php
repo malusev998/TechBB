@@ -21,12 +21,12 @@ return
         'default_database' => 'production',
         'production' => [
             'adapter' => $envs['DATABASE_DRIVER'],
-            'host' => $envs['DATABASE_HOST'],
-            'name' => $envs['DATABASE_NAME'],
-            'user' => $envs['DATABASE_USER'],
-            'pass' => $envs['DATABASE_PASSWORD'],
-            'port' => $envs['DATABASE_PORT'],
-            'charset' => $envs['DATABASE_CHARSET'],
+            'host' => $envs['DATABASE_HOST'] ?? 'localhost',
+            'name' => $envs['DATABASE_NAME'] ?? 'techbb',
+            'user' => $envs['DATABASE_USER'] ?? 'root',
+            'pass' => $envs['DATABASE_PASSWORD'] ?? '',
+            'port' => $envs['DATABASE_PORT'] ?? 3306,
+            'charset' => $envs['DATABASE_CHARSET'] ?? 'utf8mb4',
         ],
     ],
     'version_order' => 'creation'

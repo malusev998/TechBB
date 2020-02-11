@@ -39,6 +39,8 @@ class UserSeeder extends AbstractSeed
         $admin = $adapter->fetchRow('SELECT id FROM roles WHERE name = \'admin\' LIMIT 1');
         $user = $adapter->fetchRow('SELECT id FROM roles WHERE name = \'user\' LIMIT 1');
 
+        echo $envs['ADMIN_PASSWORD'] . PHP_EOL;
+
         $data = [
             [
                 'name'              => $envs['ADMIN_NAME'],

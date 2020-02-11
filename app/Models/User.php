@@ -16,6 +16,7 @@ class User extends Model implements JwtSubject
         'email',
         'password',
         'email_verified_at',
+        'role_id'
     ];
 
     protected $hidden = [

@@ -7,4 +7,9 @@ return static function (RoutingConfigurator $routes ) {
         ->methods(['GET'])
         ->controller('HomeController@index');
 
+
+    $routes->add('login', '/login')
+        ->methods(['POST'])
+        ->controller('Auth\LoginController@login');
+
 };

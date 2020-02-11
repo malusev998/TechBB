@@ -16,10 +16,9 @@ abstract class BaseDto implements JsonSerializable, ArrayAccess, Arrayable
 
     public function __construct(array $properties = [])
     {
-        $this->allowed = array_flip($this->allowed);
 
         foreach ($properties as $property => $value) {
-            if($this->allowed[$property]) {
+            if(in_array($property, $this->allowed, true)) {
                 $this->attributes[$property] = $value;
             }
         }

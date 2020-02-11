@@ -12,8 +12,8 @@ $connections = [
         'database'  => $_ENV['DATABASE_NAME'] ?? 'techbb',
         'username'  => $_ENV['DATABASE_USER'] ?? 'root',
         'password'  => $_ENV['DATABASE_PASSWORD'] ?? '',
-        'charset'   => $_ENV['DATABASE_CHARSET'] ?? 'utf8',
-        'collation' => 'utf8_unicode_ci',
+        'charset'   => $_ENV['DATABASE_CHARSET'] ?? 'utf8mb4',
+        'collation' => 'utf8mb4_unicode_ci',
         'prefix'    => $_ENV['DATABASE_PREFIX'] ?? '',
     ],
 ];
@@ -33,7 +33,7 @@ return [
     TechBBRedis::class => create(TechBBRedis::class)
         ->constructor(
             get('redis_host'),
-            get(    'redis_post'),
+            get('redis_post'),
             get('redis_database'),
             get('redis_prefix')
         ),

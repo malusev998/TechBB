@@ -6,8 +6,10 @@ namespace App\Controllers;
 
 use Throwable;
 use App\Dto\SubscriberDto;
+use App\Core\Annotations\Can;
 use App\Services\SubscriberService;
 use App\Exceptions\ModelAlreadyExists;
+use App\Core\Annotations\Authenticate;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 

@@ -10,6 +10,10 @@ use App\Core\Contracts\AuthGuard;
 use App\Contracts\Jwt\JwtChecker;
 use Symfony\Component\HttpFoundation\Request;
 
+use function dd;
+use function strpos;
+use function substr;
+
 class JwtAuthGuard implements AuthGuard
 {
     protected JwtChecker $jwtChecker;
@@ -22,9 +26,13 @@ class JwtAuthGuard implements AuthGuard
     {
         $token = $request->headers->get('Authorization');
 
-        if($token === null) {
+
+        if($token === null || strpos($token, 'Bearer ') !== 0) {
             return null;
         }
+
+        $token = substr($token, 7);
+
 
         try {
             ['payload' => $payload] = $this->jwtChecker->check($token);

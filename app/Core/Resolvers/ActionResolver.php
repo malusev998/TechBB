@@ -4,6 +4,7 @@
 namespace App\Core\Resolvers;
 
 
+use Throwable;
 use ReflectionClass;
 use ReflectionMethod;
 use App\Core\BaseDto;
@@ -251,13 +252,13 @@ class ActionResolver implements Resolver
      */
     private function authorize(Can $can, ContainerInterface $container): void
     {
-        $resolver = $container->get(PermissionResolver::class);
-
-        if (!$resolver) {
+        try {
+            $resolver = $container->get(PermissionResolver::class);
+        } catch (Throwable $e) {
             return;
         }
 
-        if(!$resolver->resolve($this->request, $can->permissions ?? [])) {
+        if (!$resolver->resolve($this->request, $can->permissions ?? [])) {
             throw new UnauthorizedException();
         }
     }

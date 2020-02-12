@@ -26,6 +26,11 @@ class SubscribeController extends ApiController
     }
 
 
+    /**
+     * @param  \App\Dto\SubscriberDto  $data
+     *
+     * @return \Symfony\Component\HttpFoundation\Response|null
+     */
     public function subscribe(SubscriberDto $data): ?Response
     {
         try {

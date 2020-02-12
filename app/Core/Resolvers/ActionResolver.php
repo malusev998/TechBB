@@ -4,6 +4,7 @@
 namespace App\Core\Resolvers;
 
 
+use ReflectionClass;
 use ReflectionMethod;
 use App\Core\BaseDto;
 use App\Core\DtoValidate;
@@ -53,13 +54,18 @@ class ActionResolver implements Resolver
             throw new IoCContainerException();
         }
 
-        $reflex = new ReflectionMethod($this->controllerInstance, $this->action);
+        $reflectionMethod = new ReflectionMethod($this->controllerInstance, $this->action);
 
         $pipeline = new Pipeline();
 
-        $this->handleAnnotations($reflex, $container, $pipeline);
+        $this->handleAnnotations(
+            new ReflectionClass($this->controllerInstance),
+            $reflectionMethod,
+            $container,
+            $pipeline
+        );
 
-        $params = $reflex->getParameters();
+        $params = $reflectionMethod->getParameters();
 
         $invokeParams = [];
 
@@ -84,8 +90,8 @@ class ActionResolver implements Resolver
         }
         return $pipeline->handle(
             $this->request,
-            function () use ($invokeParams, $reflex) {
-                return $reflex->invokeArgs($this->controllerInstance, $invokeParams);
+            function () use ($invokeParams, $reflectionMethod) {
+                return $reflectionMethod->invokeArgs($this->controllerInstance, $invokeParams);
             }
         );
     }
@@ -94,35 +100,118 @@ class ActionResolver implements Resolver
      * @throws \App\Core\Exceptions\UnauthorizedException
      * @throws \Doctrine\Common\Annotations\AnnotationException
      *
-     * @param  \App\Core\Http\Pipeline  $pipeline
-     * @param  \ReflectionMethod  $reflectionMethod
      * @param  \Psr\Container\ContainerInterface  $container
+     * @param  \App\Core\Http\Pipeline  $pipeline
+     * @param  \ReflectionClass  $reflectionClass
+     * @param  \ReflectionMethod  $reflectionMethod
      */
     protected function handleAnnotations(
+        ReflectionClass $reflectionClass,
         ReflectionMethod $reflectionMethod,
         ContainerInterface $container,
         Pipeline $pipeline
     ): void {
-        $annotationsReader = new AnnotationReader();
-        $annotations = $annotationsReader->getMethodAnnotations($reflectionMethod);
-        /** @var Authenticate|null $authAnnotation */
-        $authAnnotation = $annotationsReader->getMethodAnnotation($reflectionMethod, Authenticate::class);
+        $reader = new AnnotationReader();
 
-        if ($authAnnotation && ($auth = $container->get($authAnnotation->guard)) && $auth instanceof AuthGuard) {
-            $request = $auth->authenticate($this->request);
+        $this->handleClassAnnotations($reader, $reflectionClass, $container, $pipeline);
+        $this->handleMethodAnnotations($reader, $reflectionMethod, $container, $pipeline);
+    }
 
-            if ($request !== null) {
-                $this->request = $request;
-            } else {
-                throw new UnauthorizedException();
-            }
-        }
+    /**
+     * @throws \App\Core\Exceptions\UnauthorizedException
+     *
+     * @param  \ReflectionClass  $reflex
+     * @param  \Psr\Container\ContainerInterface  $container
+     * @param  \App\Core\Http\Pipeline  $pipeline
+     * @param  \Doctrine\Common\Annotations\AnnotationReader  $reader
+     */
+    protected function handleClassAnnotations(
+        AnnotationReader $reader,
+        ReflectionClass $reflex,
+        ContainerInterface $container,
+        Pipeline $pipeline
+    ): void {
+        $annotations = $reader->getClassAnnotations($reflex);
+        $this->handleSharedAnnotations(
+            $container,
+            $reader->getClassAnnotation(
+                $reflex,
+                Authenticate::class
+            ),
+            $annotations,
+            $pipeline
+        );
+    }
+
+    /**
+     * @throws \App\Core\Exceptions\UnauthorizedException
+     *
+     * @param  \ReflectionMethod  $reflectionMethod
+     * @param  \Psr\Container\ContainerInterface  $container
+     * @param  \App\Core\Http\Pipeline  $pipeline
+     * @param  \Doctrine\Common\Annotations\AnnotationReader  $reader
+     */
+    protected function handleMethodAnnotations(
+        AnnotationReader $reader,
+        ReflectionMethod $reflectionMethod,
+        ContainerInterface $container,
+        Pipeline $pipeline
+    ): void {
+        $annotations = $reader->getMethodAnnotations($reflectionMethod);
+        $this->handleSharedAnnotations(
+            $container,
+            $reader->getMethodAnnotation(
+                $reflectionMethod,
+                Authenticate::class
+            ),
+            $annotations,
+            $pipeline
+        );
+    }
+
+    /**
+     * @throws \App\Core\Exceptions\UnauthorizedException
+     *
+     * @param  \App\Core\Annotations\Authenticate|null  $authenticate
+     * @param  array|null  $annotations
+     * @param  \App\Core\Http\Pipeline  $pipeline
+     * @param  \Psr\Container\ContainerInterface  $container
+     */
+    private function handleSharedAnnotations(
+        ContainerInterface $container,
+        ?Authenticate $authenticate,
+        ?array $annotations,
+        Pipeline $pipeline
+    ): void {
+        $this->authenticate(
+            $authenticate,
+            $container
+        );
 
         foreach ($annotations as $annotation) {
             if ($annotation instanceof Middleware) {
                 foreach ($annotation->middleware as $m) {
                     $pipeline->addMiddleware($container->get($m));
                 }
+            }
+        }
+    }
+
+    /**
+     * @throws \App\Core\Exceptions\UnauthorizedException
+     *
+     * @param  \Psr\Container\ContainerInterface  $container
+     * @param  \App\Core\Annotations\Authenticate|null  $authenticate
+     */
+    private function authenticate(?Authenticate $authenticate, ContainerInterface $container): void
+    {
+        if ($authenticate && ($auth = $container->get($authenticate->guard)) && $auth instanceof AuthGuard) {
+            $request = $auth->authenticate($this->request);
+
+            if ($request !== null) {
+                $this->request = $request;
+            } else {
+                throw new UnauthorizedException();
             }
         }
     }

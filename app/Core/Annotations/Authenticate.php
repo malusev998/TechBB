@@ -8,6 +8,7 @@ namespace App\Core\Annotations;
  *
  * @package App\Core\Annotations
  * @Annotation
+ * @Target({"METHOD", "CLASS"})
  */
 class Authenticate
 {

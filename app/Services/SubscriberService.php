@@ -47,7 +47,7 @@ class SubscriberService
     public function create(SubscriberDto $data): Subscriber
     {
         if (Subscriber::query()->where('email', $data->email)->exists()) {
-            throw new ModelAlreadyExists('Subscriber with email '.$data->email.' already exists');
+            throw new ModelAlreadyExists("Subscriber with email {$data->email} already exists");
         }
 
         $subscriber = new Subscriber($data->toArray());

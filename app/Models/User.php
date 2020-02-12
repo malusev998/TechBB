@@ -21,9 +21,17 @@ class User extends Model implements JwtSubject
 
     protected $hidden = [
         'password',
+        'role_id',
+        'updated_at',
+        'id',
+        'email_verified_at'
     ];
 
     protected $with = ['role'];
+
+    protected $casts = [
+        'email_verified_at' => 'datetime'
+    ];
 
     public function role(): BelongsTo
     {

@@ -37,6 +37,7 @@ class SubscriberService
     /**
      * Creates new subscriber
      *
+     * @throws \App\Exceptions\ModelAlreadyExists
      * @throws \Throwable
      *
      * @param  \App\Dto\SubscriberDto  $data

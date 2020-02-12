@@ -4,10 +4,10 @@ use App\Kernel;
 use BrosSquad\DotEnv\EnvParser;
 use Symfony\Component\Routing\Exception\NoConfigurationException;
 
-require_once __DIR__.'/../vendor/autoload.php';
+$loader = require __DIR__.'/../vendor/autoload.php';
 
 $dotnev = new EnvParser(__DIR__.'/../.env');
-$kernel = (new Kernel())
+$kernel = (new Kernel($loader))
     ->setEnvironment(getApplicationEnvironment());
 
 try {

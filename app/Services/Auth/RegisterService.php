@@ -6,14 +6,14 @@ namespace App\Services\Auth;
 
 use App\Models\User;
 use App\Contracts\Hasher;
+use App\Dto\Auth\RegisterDto;
+use App\Contracts\Auth\RegisterContract;
 use App\Exceptions\UserAlreadyExistsException;
 
-class RegisterService
+class RegisterService implements RegisterContract
 {
     protected Hasher $hasher;
     protected RoleService $roleService;
-
-
 
     /**
      * RegisterService constructor.
@@ -32,11 +32,13 @@ class RegisterService
      * @throws \App\Exceptions\UserAlreadyExistsException
      * @throws \Throwable
      *
-     * @param  array  $data
+     * @param  \App\Dto\Auth\RegisterDto  $data
+     *
+     * @param  string  $role
      *
      * @return \App\Models\User
      */
-    public function register(array $data): User
+    public function register(RegisterDto $data, string $role = 'user'): User
     {
         $userExists = User::query()->where('email', $data['email'])->exists();
 
@@ -51,12 +53,13 @@ class RegisterService
                 'surname' => $data['surname'],
                 'password' => $this->hasher->hash($data['password']),
                 'email_verified_at' => null,
-                'role_id' => $this->roleService->getRole('user')->id
+                'role_id' => $this->roleService->getRole($role)->id
             ]
         );
 
         $user->saveOrFail();
 
+        // TODO: Send verification email
 
         return $user;
     }

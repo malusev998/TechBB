@@ -6,6 +6,7 @@ namespace App\Controllers\Auth;
 
 use Throwable;
 use App\Dto\Auth\LoginDto;
+use App\Core\Annotations\Middleware;
 use App\Contracts\Auth\LoginContract;
 use App\Controllers\ApiController;
 use Symfony\Component\HttpFoundation\Response;
@@ -25,6 +26,12 @@ class LoginController extends ApiController
     }
 
 
+    /**
+     * @param  \App\Dto\Auth\LoginDto  $loginDto
+     *
+     * @return \Symfony\Component\HttpFoundation\Response|null
+     *
+     */
     public function login(LoginDto $loginDto): ?Response
     {
         try {

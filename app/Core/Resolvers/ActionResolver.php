@@ -7,9 +7,12 @@ namespace App\Core\Resolvers;
 use ReflectionMethod;
 use App\Core\BaseDto;
 use App\Core\DtoValidate;
+use App\Core\Http\Pipeline;
+use App\Core\Annotations\Middleware;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use App\Core\Exceptions\IoCContainerException;
+use Doctrine\Common\Annotations\AnnotationReader;
 
 class ActionResolver implements Resolver
 {
@@ -41,12 +44,15 @@ class ActionResolver implements Resolver
      */
     public function resolve(ContainerInterface $container)
     {
-
         if ($this->controllerInstance === null) {
             throw new IoCContainerException();
         }
 
         $reflex = new ReflectionMethod($this->controllerInstance, $this->action);
+
+        $pipeline = new Pipeline();
+
+        $this->handleAnnotations($reflex, $container, $pipeline);
 
         $params = $reflex->getParameters();
 
@@ -71,6 +77,29 @@ class ActionResolver implements Resolver
                 $invokeParams[] = $this->params[$paramName];
             }
         }
-        return $reflex->invokeArgs($this->controllerInstance, $invokeParams);
+        return $pipeline->handle(
+            $this->request,
+            function () use ($invokeParams, $reflex) {
+                return $reflex->invokeArgs($this->controllerInstance, $invokeParams);
+            }
+        );
     }
+
+    protected function handleAnnotations(
+        ReflectionMethod $reflectionMethod,
+        ContainerInterface $container,
+        Pipeline $pipeline
+    ): void {
+        $annotationsReader = new AnnotationReader();
+        $annotations = $annotationsReader->getMethodAnnotations($reflectionMethod);
+
+        foreach ($annotations as $annotation) {
+            if ($annotation instanceof Middleware) {
+                foreach ($annotation->middleware as $m) {
+                    $pipeline->addMiddleware($container->get($m));
+                }
+            }
+        }
+    }
+
 }

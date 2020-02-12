@@ -23,7 +23,7 @@ class LoginDto extends BaseDto
     public function validate(): array
     {
         return [
-            'email' => 'required',
+            'email' => 'required|email|max:150',
             'password' => 'required'
         ];
     }

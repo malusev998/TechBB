@@ -33,12 +33,10 @@ class ActionParser implements Parser
     {
         if (is_string($data)) {
             [$controller, $action] = explode($this->delimiter, $data);
+        } elseif (is_array($data)) {
+            [$controller, $action] = $data;
         } else {
-            if (is_array($data)) {
-                [$controller, $action] = $data;
-            } else {
-                throw new Error('Invalid type for controller and action, only string and arrays are accepted');
-            }
+            throw new Error('Invalid type for controller and action, only string and arrays are accepted');
         }
 
         if (class_exists($controller)) {

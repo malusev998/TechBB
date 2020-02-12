@@ -57,9 +57,14 @@ abstract class ApiController
         return $this->response($data, Response::HTTP_NOT_FOUND, $headers);
     }
 
-    public function unprocessableEntity($data, array $headers = [])
+    public function unprocessableEntity($data, array $headers = []): Response
     {
         return $this->response($data, Response::HTTP_UNPROCESSABLE_ENTITY, $headers);
+    }
+
+    public function serverError($data, array $headers = []): Response
+    {
+        return $this->response($data, Response::HTTP_INTERNAL_SERVER_ERROR, $headers);
     }
 
 }

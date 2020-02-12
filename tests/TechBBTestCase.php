@@ -9,7 +9,7 @@ use Monolog\Test\TestCase;
 use BrosSquad\DotEnv\EnvParser;
 use Psr\Container\ContainerInterface;
 
-class TechBBTestCase extends TestCase
+abstract class TechBBTestCase extends TestCase
 {
     protected array $envs = [];
 

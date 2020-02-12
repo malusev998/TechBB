@@ -12,7 +12,7 @@ class Environment
     protected string $env = 'production';
     protected ?Closure $customHandler = null;
 
-    public function handle()
+    public function handle(): void
     {
         if ($this->customHandler !== null) {
             $this->customHandler->call($this, $this->env);

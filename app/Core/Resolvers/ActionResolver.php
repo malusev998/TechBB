@@ -9,13 +9,16 @@ use ReflectionMethod;
 use App\Core\BaseDto;
 use App\Core\DtoValidate;
 use App\Core\Http\Pipeline;
+use App\Core\Annotations\Can;
 use App\Core\Contracts\AuthGuard;
 use App\Core\Annotations\Middleware;
 use Psr\Container\ContainerInterface;
 use App\Core\Annotations\Authenticate;
+use App\Core\Contracts\PermissionResolver;
 use Symfony\Component\HttpFoundation\Request;
 use App\Core\Exceptions\IoCContainerException;
 use App\Core\Exceptions\UnauthorizedException;
+use App\Core\Exceptions\UnauthenticatedException;
 use Doctrine\Common\Annotations\AnnotationReader;
 
 class ActionResolver implements Resolver
@@ -39,10 +42,11 @@ class ActionResolver implements Resolver
 
     /**
      * @throws \App\Core\Exceptions\IoCContainerException
-     * @throws \App\Core\Exceptions\UnauthorizedException
+     * @throws \App\Core\Exceptions\UnauthenticatedException
      * @throws \App\Core\Exceptions\ValidationException
      * @throws \Doctrine\Common\Annotations\AnnotationException
      * @throws \ReflectionException
+     * @throws \App\Core\Exceptions\UnauthorizedException
      *
      * @param  \Psr\Container\ContainerInterface  $container
      *
@@ -97,8 +101,9 @@ class ActionResolver implements Resolver
     }
 
     /**
-     * @throws \App\Core\Exceptions\UnauthorizedException
+     * @throws \App\Core\Exceptions\UnauthenticatedException
      * @throws \Doctrine\Common\Annotations\AnnotationException
+     * @throws \App\Core\Exceptions\UnauthorizedException
      *
      * @param  \Psr\Container\ContainerInterface  $container
      * @param  \App\Core\Http\Pipeline  $pipeline
@@ -118,6 +123,7 @@ class ActionResolver implements Resolver
     }
 
     /**
+     * @throws \App\Core\Exceptions\UnauthenticatedException
      * @throws \App\Core\Exceptions\UnauthorizedException
      *
      * @param  \ReflectionClass  $reflex
@@ -138,12 +144,17 @@ class ActionResolver implements Resolver
                 $reflex,
                 Authenticate::class
             ),
+            $reader->getClassAnnotation(
+                $reflex,
+                Can::class
+            ),
             $annotations,
             $pipeline
         );
     }
 
     /**
+     * @throws \App\Core\Exceptions\UnauthenticatedException
      * @throws \App\Core\Exceptions\UnauthorizedException
      *
      * @param  \ReflectionMethod  $reflectionMethod
@@ -164,15 +175,21 @@ class ActionResolver implements Resolver
                 $reflectionMethod,
                 Authenticate::class
             ),
+            $reader->getMethodAnnotation(
+                $reflectionMethod,
+                Can::class
+            ),
             $annotations,
             $pipeline
         );
     }
 
     /**
+     * @throws \App\Core\Exceptions\UnauthenticatedException
      * @throws \App\Core\Exceptions\UnauthorizedException
      *
      * @param  \App\Core\Annotations\Authenticate|null  $authenticate
+     * @param  \App\Core\Annotations\Can|null  $can
      * @param  array|null  $annotations
      * @param  \App\Core\Http\Pipeline  $pipeline
      * @param  \Psr\Container\ContainerInterface  $container
@@ -180,13 +197,22 @@ class ActionResolver implements Resolver
     private function handleSharedAnnotations(
         ContainerInterface $container,
         ?Authenticate $authenticate,
+        ?Can $can,
         ?array $annotations,
         Pipeline $pipeline
     ): void {
-        $this->authenticate(
-            $authenticate,
-            $container
-        );
+        // TODO: Optimize annotation parsing
+
+        if ($authenticate) {
+            $this->authenticate(
+                $authenticate,
+                $container
+            );
+            if ($can) {
+                $this->authorize($can, $container);
+            }
+        }
+
 
         foreach ($annotations as $annotation) {
             if ($annotation instanceof Middleware) {
@@ -198,21 +224,41 @@ class ActionResolver implements Resolver
     }
 
     /**
-     * @throws \App\Core\Exceptions\UnauthorizedException
+     * @throws \App\Core\Exceptions\UnauthenticatedException
      *
      * @param  \Psr\Container\ContainerInterface  $container
      * @param  \App\Core\Annotations\Authenticate|null  $authenticate
      */
-    private function authenticate(?Authenticate $authenticate, ContainerInterface $container): void
+    private function authenticate(Authenticate $authenticate, ContainerInterface $container): void
     {
-        if ($authenticate && ($auth = $container->get($authenticate->guard)) && $auth instanceof AuthGuard) {
+        if (($auth = $container->get($authenticate->guard)) && $auth instanceof AuthGuard) {
             $request = $auth->authenticate($this->request);
 
             if ($request !== null) {
                 $this->request = $request;
             } else {
-                throw new UnauthorizedException();
+                throw new UnauthenticatedException();
             }
+        }
+    }
+
+
+    /**
+     * @throws \App\Core\Exceptions\UnauthorizedException
+     *
+     * @param  \Psr\Container\ContainerInterface  $container
+     * @param  \App\Core\Annotations\Can  $can
+     */
+    private function authorize(Can $can, ContainerInterface $container): void
+    {
+        $resolver = $container->get(PermissionResolver::class);
+
+        if (!$resolver) {
+            return;
+        }
+
+        if(!$resolver->resolve($this->request, $can->permissions ?? [])) {
+            throw new UnauthorizedException();
         }
     }
 

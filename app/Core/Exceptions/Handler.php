@@ -66,7 +66,7 @@ class Handler
         }
 
         // Any other exception
-        echo $e->getMessage();
+//        echo $e->getMessage();
         return $this->handleResponse(Response::HTTP_INTERNAL_SERVER_ERROR, ['message' => 'An Error has occurred']);
     }
 

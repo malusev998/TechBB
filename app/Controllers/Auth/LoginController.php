@@ -8,7 +8,6 @@ use Throwable;
 use App\Dto\Auth\LoginDto;
 use App\Contracts\Auth\LoginContract;
 use App\Controllers\ApiController;
-use App\Core\Annotations\Authenticate;
 use Symfony\Component\HttpFoundation\Response;
 
 class LoginController extends ApiController
@@ -27,7 +26,6 @@ class LoginController extends ApiController
 
 
     /**
-     * @Authenticate()
      * @param  \App\Dto\Auth\LoginDto  $loginDto
      *
      * @return \Symfony\Component\HttpFoundation\Response|null

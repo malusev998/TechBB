@@ -14,5 +14,6 @@ class ValidationExceptionHandler implements ExceptionHandlerInterface
 
     public function handle(Request $request, Throwable $e): Response
     {
+        return null;
     }
 }

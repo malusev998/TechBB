@@ -17,9 +17,9 @@ return static function (RoutingConfigurator $routes) {
 
     $routes->add('subscribe', '/subscribe')
         ->methods(['POST'])
-        ->controller('SubscriberController@subscribe');
+        ->controller('SubscribeController@subscribe');
 
     $routes->add('unsubscribe', '/unsubscribe')
         ->methods(['DELETE'])
-        ->controller('SubscriberController@unsubscribe');
+        ->controller('SubscribeController@unsubscribe');
 };

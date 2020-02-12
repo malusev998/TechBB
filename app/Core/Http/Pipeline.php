@@ -28,8 +28,7 @@ class Pipeline implements Middleware
 
     public function handle(Request $request, Closure $next)
     {
-
-        if($this->middleware->isEmpty()) {
+        if ($this->middleware->isEmpty()) {
             return $next($request);
         }
 
@@ -37,23 +36,29 @@ class Pipeline implements Middleware
 
         $response = null;
 
-        while (!$this->middleware->isEmpty()) {
-            $current = $this->middleware->dequeue();
-            $next = $this->middleware->dequeue();
+        $current = $this->middleware->dequeue();
 
-            $response = $current->handle(
-                $request,
-                $next instanceof Middleware ? Closure::fromCallable([$next, 'handle'])
-                    : $nextCopy
-            );
 
-            if ($response instanceof Response) {
-                return $response;
-            }
+        $response = $current->handle(
+            $request,
+            Closure::bind(
+                function ($request) use ($nextCopy) {
+                    return $this->handle($request, $nextCopy);
+                },
+                $this
+            )
+        );
 
-            if ($response instanceof Request) {
-                $request = $response;
-            }
+//        $response = $current->handle(
+//            $request,
+//            $next instanceof Middleware ? function ($request) use ($next) {
+//                return $next->handle($request, $next);
+//            }
+//                : $nextCopy
+//        );
+
+        if ($response instanceof Response) {
+            return $response;
         }
 
         return $response;

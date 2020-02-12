@@ -50,11 +50,15 @@ class JwtChecker implements \App\Contracts\Jwt\JwtChecker
 
 
     /**
+     * Check Json Web Token validity
+     *
+     * @throws InvalidSignatureException
+     * @throws \Throwable
      * @param  string  $token
      *
-     * @return mixed
+     * @return array
      */
-    public function check(string $token)
+    public function check(string $token): array
     {
         $jws = $this->serializerManager->unserialize($token);
 

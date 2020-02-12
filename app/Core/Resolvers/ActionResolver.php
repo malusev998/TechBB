@@ -8,10 +8,13 @@ use ReflectionMethod;
 use App\Core\BaseDto;
 use App\Core\DtoValidate;
 use App\Core\Http\Pipeline;
+use App\Core\Contracts\AuthGuard;
 use App\Core\Annotations\Middleware;
 use Psr\Container\ContainerInterface;
+use App\Core\Annotations\Authenticate;
 use Symfony\Component\HttpFoundation\Request;
 use App\Core\Exceptions\IoCContainerException;
+use App\Core\Exceptions\UnauthorizedException;
 use Doctrine\Common\Annotations\AnnotationReader;
 
 class ActionResolver implements Resolver
@@ -35,8 +38,10 @@ class ActionResolver implements Resolver
 
     /**
      * @throws \App\Core\Exceptions\IoCContainerException
-     * @throws \ReflectionException
+     * @throws \App\Core\Exceptions\UnauthorizedException
      * @throws \App\Core\Exceptions\ValidationException
+     * @throws \Doctrine\Common\Annotations\AnnotationException
+     * @throws \ReflectionException
      *
      * @param  \Psr\Container\ContainerInterface  $container
      *
@@ -85,6 +90,14 @@ class ActionResolver implements Resolver
         );
     }
 
+    /**
+     * @throws \App\Core\Exceptions\UnauthorizedException
+     * @throws \Doctrine\Common\Annotations\AnnotationException
+     *
+     * @param  \App\Core\Http\Pipeline  $pipeline
+     * @param  \ReflectionMethod  $reflectionMethod
+     * @param  \Psr\Container\ContainerInterface  $container
+     */
     protected function handleAnnotations(
         ReflectionMethod $reflectionMethod,
         ContainerInterface $container,
@@ -92,6 +105,18 @@ class ActionResolver implements Resolver
     ): void {
         $annotationsReader = new AnnotationReader();
         $annotations = $annotationsReader->getMethodAnnotations($reflectionMethod);
+        /** @var Authenticate|null $authAnnotation */
+        $authAnnotation = $annotationsReader->getMethodAnnotation($reflectionMethod, Authenticate::class);
+
+        if ($authAnnotation && ($auth = $container->get($authAnnotation->guard)) && $auth instanceof AuthGuard) {
+            $request = $auth->authenticate($this->request);
+
+            if ($request !== null) {
+                $this->request = $request;
+            } else {
+                throw new UnauthorizedException();
+            }
+        }
 
         foreach ($annotations as $annotation) {
             if ($annotation instanceof Middleware) {

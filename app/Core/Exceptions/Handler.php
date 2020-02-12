@@ -46,6 +46,10 @@ class Handler
             return $res;
         }
 
+        if($e instanceof UnauthorizedException) {
+            return $this->handleResponse(Response::HTTP_UNAUTHORIZED, ['message' => $e->getMessage()]);
+        }
+
         // Route not found exception
         if ($e instanceof ResourceNotFoundException) {
             return $this->handleResponse(Response::HTTP_NOT_FOUND, ['message' => 'Page is not found']);

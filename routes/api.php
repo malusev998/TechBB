@@ -61,7 +61,23 @@ return static function (RoutingConfigurator $routes) {
         ->controller('ContactController@delete');
 
     // Categories
-
-
+    $routes->add('get_categories', '/categories')
+        ->methods(['GET'])
+        ->controller('CategoryController@get');
+    $routes->add('get_category', '/categories/{id}')
+        ->methods(['GET'])
+        ->controller('CategoryController@getOne');
+    $routes->add('get_popular_categories', '/categories')
+        ->methods(['GET'])
+        ->controller('CategoryController@getPopular');
+    $routes->add('create_category', '/categories')
+        ->methods(['POST'])
+        ->controller('CategoryController@create');
+    $routes->add('update_category', '/categories')
+        ->methods(['PATCH'])
+        ->controller('CategoryController@update');
+    $routes->add('delete_category', '/categories/{id}')
+        ->methods(['DELETE'])
+        ->controller('CategoryController@delete');
     // Posts
 };

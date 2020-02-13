@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Services\Jwt\JwtSubject;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class User extends Model implements JwtSubject
@@ -16,7 +17,7 @@ class User extends Model implements JwtSubject
         'email',
         'password',
         'email_verified_at',
-        'role_id'
+        'role_id',
     ];
 
     protected $hidden = [
@@ -24,19 +25,14 @@ class User extends Model implements JwtSubject
         'role_id',
         'updated_at',
         'id',
-        'email_verified_at'
+        'email_verified_at',
     ];
 
     protected $with = ['role'];
 
     protected $casts = [
-        'email_verified_at' => 'datetime'
+        'email_verified_at' => 'datetime',
     ];
-
-    public function role(): BelongsTo
-    {
-        return $this->belongsTo(Role::class);
-    }
 
     public function getIdentifier()
     {
@@ -46,10 +42,20 @@ class User extends Model implements JwtSubject
     public function getCustomClaims(): array
     {
         return [
-            'name' => $this->name,
+            'name'    => $this->name,
             'surname' => $this->surname,
-            'email' => $this->email,
-            'role' => $this->role->name
+            'email'   => $this->email,
+            'role'    => $this->role->name,
         ];
+    }
+
+    public function role(): BelongsTo
+    {
+        return $this->belongsTo(Role::class);
+    }
+
+    public function categories(): HasMany
+    {
+        return $this->hasMany(Category::class);
     }
 }

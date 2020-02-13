@@ -6,6 +6,7 @@ namespace App\Controllers\Auth;
 
 use Throwable;
 use App\Dto\Auth\LoginDto;
+use App\Core\Annotations\Middleware;
 use App\Contracts\Auth\LoginContract;
 use App\Controllers\ApiController;
 use Symfony\Component\HttpFoundation\Response;

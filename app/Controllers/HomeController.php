@@ -4,21 +4,15 @@
 namespace App\Controllers;
 
 
-use App\Contracts\Hasher;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
+use App\Core\Annotations\Middleware;
 
 class HomeController extends ApiController
 {
-    public function __construct(Hasher $hasher) { }
-
-    public function index(): void
+    /**
+     * @Middleware(middleware={"cors"})
+     */
+    public function index()
     {
-        echo 1;
-    }
-
-    public function singlePost(Request $request, $name)
-    {
-        return $this->ok(['name' => $name]);
+        return $this->ok([]);
     }
 }

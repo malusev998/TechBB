@@ -12,7 +12,7 @@ class CreatePostsTable extends AbstractMigration
             ->addColumn('status', 'enum', ['values' => ['published', 'draft']])
             ->addColumn('number_of_likes', 'integer', ['signed' => false, 'default' => 0])
             ->addColumn('number_of_comments', 'integer', ['signed' => false, 'default' => 0])
-            ->addColumn('user_id', 'integer', ['signed' => true, 'null' => true])
+            ->addColumn('user_id', 'integer', ['signed' => false, 'null' => true])
             ->addTimestamps()
             ->addIndex('title', ['unique' => true])
             ->addForeignKey(
@@ -21,7 +21,7 @@ class CreatePostsTable extends AbstractMigration
                 'id',
                 [
                     'delete' => 'set null',
-                    'update' => 'cascade',
+                    'update' => 'cascade'
                 ]
             )
             ->create();

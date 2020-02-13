@@ -18,7 +18,6 @@ class CreateCategoriesTable extends AbstractMigration
                 'id',
                 [
                     'delete' => 'set null',
-                    'update' => 'cascade',
                 ]
             )->create();
     }

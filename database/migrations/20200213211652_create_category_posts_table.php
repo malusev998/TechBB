@@ -14,8 +14,8 @@ class CreateCategoryPostsTable extends AbstractMigration
                 'posts',
                 'id',
                 [
-                    'delete'  => 'cascade',
-                    'cascade' => 'cascade',
+                    'delete'  => 'CASCADE',
+                    'update' => 'CASCADE',
                 ]
             )
             ->addForeignKey(
@@ -23,8 +23,8 @@ class CreateCategoryPostsTable extends AbstractMigration
                 'categories',
                 'id',
                 [
-                    'delete'  => 'cascade',
-                    'cascade' => 'cascade',
+                    'delete'  => 'CASCADE',
+                    'update' => 'CASCADE',
                 ]
             )
             ->create();

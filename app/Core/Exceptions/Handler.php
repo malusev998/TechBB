@@ -9,6 +9,7 @@ use Psr\Container\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
+use Symfony\Component\Translation\Exception\NotFoundResourceException;
 
 class Handler
 {
@@ -46,6 +47,9 @@ class Handler
             return $res;
         }
 
+        if ($e instanceof CorsException) {
+            return $this->handleResponse(Response::HTTP_BAD_REQUEST, ['message' => $e->getMessage()]);
+        }
 
         if ($e instanceof UnauthenticatedException) {
             return $this->handleResponse(Response::HTTP_UNAUTHORIZED, ['message' => $e->getMessage()]);
@@ -56,7 +60,9 @@ class Handler
         }
 
         // Route not found exception
-        if ($e instanceof ResourceNotFoundException) {
+        if ($e instanceof ResourceNotFoundException ||
+            $e instanceof NotFoundResourceException ||
+            $e instanceof ControllerNotFoundException) {
             return $this->handleResponse(Response::HTTP_NOT_FOUND, ['message' => 'Page is not found']);
         }
 
@@ -71,8 +77,12 @@ class Handler
         }
 
         // Any other exception
-//        echo $e->getMessage();
-        return $this->handleResponse(Response::HTTP_INTERNAL_SERVER_ERROR, ['message' => 'An Error has occurred']);
+        return $this->handleResponse(
+            Response::HTTP_INTERNAL_SERVER_ERROR,
+            [
+                'message' => $_ENV['APP_ENVIRONMENT'] === 'development' ? $e->getMessage() : 'An error has occurred',
+            ]
+        );
     }
 
     private function handleResponse(int $status, $data, $headers = []): ?Response

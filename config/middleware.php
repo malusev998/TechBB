@@ -1,12 +1,10 @@
 <?php
 
-use App\Middleware\AuthMiddleware;
 
-use App\Middleware\AnotherMiddleware;
+use App\Middleware\CorsMiddleware;
 
 use function DI\autowire;
 
 return [
-    'auth'    => autowire(AuthMiddleware::class),
-    'another' => autowire(AnotherMiddleware::class),
+    'cors' => autowire(CorsMiddleware::class),
 ];

@@ -4,6 +4,7 @@
 namespace App\Services\Auth;
 
 
+use Carbon\Carbon;
 use App\Models\User;
 use App\Contracts\Hasher;
 use App\Dto\Auth\RegisterDto;
@@ -52,7 +53,7 @@ class RegisterService implements RegisterContract
                 'email' => $data['email'],
                 'surname' => $data['surname'],
                 'password' => $this->hasher->hash($data['password']),
-                'email_verified_at' => null,
+                'email_verified_at' => Carbon::now('UTC'),
                 'role_id' => $this->roleService->getRole($role)->id
             ]
         );

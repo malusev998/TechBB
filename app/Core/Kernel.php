@@ -17,7 +17,6 @@ use App\Core\Resolvers\ControllerResolver;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\HttpFoundation\Response;
-use Doctrine\Common\Annotations\AnnotationRegistry;
 
 
 abstract class Kernel
@@ -30,11 +29,9 @@ abstract class Kernel
 
     private Environment $env;
 
-    protected $loader;
 
-    public function __construct($loader, string $prefix = '/')
+    public function __construct(string $prefix = '/')
     {
-        $this->loader = $loader;
         $routes = new RouteCollection();
         $this->env = new Environment();
         $routes->addPrefix($prefix);
@@ -71,8 +68,6 @@ abstract class Kernel
             }
         }
 
-        AnnotationRegistry::registerLoader([$this->loader, 'loadClass']);
-
         return $containerBuilder->build();
     }
 
@@ -83,9 +78,9 @@ abstract class Kernel
     }
 
     /**
-     * @return mixed
+     * @return void
      */
-    public function run()
+    public function run(): void
     {
         try {
             $container = $this->injection();

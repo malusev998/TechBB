@@ -9,8 +9,6 @@ class CreateSubjectsTable extends AbstractMigration
         $this->table('subjects', ['signed' => false])
             ->addColumn('name', 'string', ['limit' => 150, 'null' => false])
             ->addColumn('user_id', 'integer', ['signed' => false, 'null' => true])
-            ->addColumn('created_at', 'datetime', ['null' => true])
-            ->addColumn('updated_at', 'datetime', ['null' => true])
             ->addForeignKey(
                 'user_id',
                 'users',
@@ -18,6 +16,7 @@ class CreateSubjectsTable extends AbstractMigration
                 ['update' => 'cascade', 'delete' => 'set null']
             )
             ->addIndex('name', ['unique' => true])
+            ->addTimestamps()
             ->create();
 
         $this->table('contacts')

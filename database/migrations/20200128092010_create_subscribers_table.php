@@ -9,8 +9,7 @@ class CreateSubscribersTable extends AbstractMigration
         $this->table('subscribers', ['signed' => false])
             ->addColumn('name', 'string', ['limit' => 80, 'null' => false])
             ->addColumn('email', 'string', ['limit' => 150, 'null' => false])
-            ->addColumn('created_at', 'datetime', ['null' => true])
-            ->addColumn('updated_at', 'datetime', ['null' => true])
+            ->addTimestamps()
             ->addIndex('email', ['unique' => true])
             ->create();
     }

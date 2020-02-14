@@ -11,6 +11,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 use Symfony\Component\Translation\Exception\NotFoundResourceException;
 
+use function dump;
+
 class Handler
 {
 
@@ -76,6 +78,7 @@ class Handler
             );
         }
 
+        dump($e);
         // Any other exception
         return $this->handleResponse(
             Response::HTTP_INTERNAL_SERVER_ERROR,

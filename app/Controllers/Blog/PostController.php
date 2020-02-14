@@ -11,6 +11,7 @@ use App\Controllers\ApiController;
 use App\Services\Blog\PostService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class PostController extends ApiController
 {
@@ -30,7 +31,7 @@ class PostController extends ApiController
     public function get(Request $request): Response
     {
         $page = $request->query->get('page', 1);
-        $perPage = $request->query->get('perPage', 10);
+        $perPage = $request->query->get('perPage', 4);
 
         return $this->ok($this->postService->get($page, $perPage));
     }
@@ -38,6 +39,15 @@ class PostController extends ApiController
     public function getPopular(Request $request): Response
     {
         return $this->ok($this->postService->getPopular($request->query->get('count', 5)));
+    }
+
+    public function getOne(int $id): Response
+    {
+        try {
+            return $this->ok($this->postService->getOne($id));
+        }catch (ModelNotFoundException $e) {
+            return $this->notFound(['message' => 'Post not found']);
+        }
     }
 
     public function search(SearchPostsDto $data, Request $request): Response

@@ -85,7 +85,8 @@ class ActionResolver implements Resolver
             }
 
 
-            if (($parent = $param->getClass()->getParentClass()) && $parent->getName() === BaseDto::class) {
+            if (($class = $param->getClass()) && ($parent = $class->getParentClass()) && $parent->getName() ===
+                                                                                         BaseDto::class) {
                 $invokeParams[] = (new DtoValidate($container, $this->request))->validate($paramType);
             }
 

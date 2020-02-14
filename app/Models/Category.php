@@ -16,6 +16,9 @@ class Category extends Model
         'created_at',
         'updated_at',
     ];
+    protected $hidden = [
+        'pivot',
+    ];
 
     public function user(): BelongsTo
     {

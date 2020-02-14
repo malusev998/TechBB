@@ -17,6 +17,10 @@ return static function (RoutingConfigurator $routes) {
         ->methods(['POST'])
         ->controller('Auth\RegisterController@register');
 
+    $routes->add('profile', '/profile')
+        ->methods(['GET'])
+        ->controller('Auth\\UserController@profile');
+
     // Subscriptions
 
     $routes->add('subscribe', '/subscribe')
@@ -63,21 +67,45 @@ return static function (RoutingConfigurator $routes) {
     // Categories
     $routes->add('get_categories', '/categories')
         ->methods(['GET'])
-        ->controller('CategoryController@get');
+        ->controller('Blog\\CategoryController@get');
     $routes->add('get_category', '/categories/{id}')
         ->methods(['GET'])
-        ->controller('CategoryController@getOne');
+        ->controller('Blog\\CategoryController@getOne');
     $routes->add('get_popular_categories', '/categories')
         ->methods(['GET'])
-        ->controller('CategoryController@getPopular');
+        ->controller('Blog\\CategoryController@getPopular');
     $routes->add('create_category', '/categories')
         ->methods(['POST'])
-        ->controller('CategoryController@create');
+        ->controller('Blog\\CategoryController@create');
     $routes->add('update_category', '/categories')
         ->methods(['PATCH'])
-        ->controller('CategoryController@update');
+        ->controller('Blog\\CategoryController@update');
     $routes->add('delete_category', '/categories/{id}')
         ->methods(['DELETE'])
-        ->controller('CategoryController@delete');
+        ->controller('Blog\\CategoryController@delete');
     // Posts
+
+    $routes->add('get_posts', '/posts')
+        ->methods(['GET'])
+        ->controller('Blog\\PostController@get');
+
+    $routes->add('get_post', '/posts/{id}')
+        ->methods(['GET'])
+        ->controller('Blog\\PostController@getOne');
+
+    $routes->add('search_posts', '/posts/search')
+        ->methods(['POST'])
+        ->controller('Blog\\PostController@search');
+
+    $routes->add('add_post', '/posts')
+        ->methods(['POST'])
+        ->controller('Blog\\PostController@create');
+
+    $routes->add('update_post', '/posts/{id}')
+        ->methods(['PATCH'])
+        ->controller('Blog\\PostController@update');
+
+    $routes->add('delete_post', '/posts/{id}')
+        ->methods(['DELETE'])
+        ->controller('Blog\\PostController@delete');
 };

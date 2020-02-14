@@ -28,7 +28,6 @@ class User extends Model implements JwtSubject
         'email_verified_at',
     ];
 
-    protected $with = ['role'];
 
     protected $casts = [
         'email_verified_at' => 'datetime',
@@ -57,5 +56,15 @@ class User extends Model implements JwtSubject
     public function categories(): HasMany
     {
         return $this->hasMany(Category::class);
+    }
+
+    public function posts(): HasMany
+    {
+        return $this->hasMany(Post::class);
+    }
+
+    public function visits(): HasMany
+    {
+        return $this->hasMany(PostsData::class);
     }
 }

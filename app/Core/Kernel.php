@@ -80,7 +80,7 @@ abstract class Kernel
     /**
      * @return void
      */
-    public function run(): void
+    public function run()
     {
         try {
             $container = $this->injection();

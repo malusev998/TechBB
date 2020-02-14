@@ -6,7 +6,7 @@ class CreateCategoryPostsTable extends AbstractMigration
 {
     public function change(): void
     {
-        $this->table('category_posts', ['primary_key' => ['post_id', 'category_id'], 'id' => false])
+        $this->table('category_post', ['primary_key' => ['post_id', 'category_id'], 'id' => false])
             ->addColumn('post_id', 'integer', ['signed' => false])
             ->addColumn('category_id', 'integer', ['signed' => false])
             ->addForeignKey(

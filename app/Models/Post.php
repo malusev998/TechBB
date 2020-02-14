@@ -5,6 +5,7 @@ namespace App\Models;
 
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
@@ -21,6 +22,7 @@ class Post extends Model
 
     protected $hidden = [
         'user_id',
+        'pivot'
     ];
 
 
@@ -32,5 +34,10 @@ class Post extends Model
     public function categories(): BelongsToMany
     {
         return $this->belongsToMany(Category::class);
+    }
+
+    public function visits(): HasMany
+    {
+        return $this->hasMany(PostsData::class);
     }
 }

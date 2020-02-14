@@ -4,11 +4,20 @@
 namespace App\Models;
 
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
+use function dd;
+
+/**
+ * Class Post
+ *
+ * @package App\Models
+ * @property \Carbon\Carbon $created_at
+ */
 class Post extends Model
 {
     protected $fillable = [
@@ -25,6 +34,12 @@ class Post extends Model
         'pivot'
     ];
 
+    protected $appends = ['time_ago'];
+
+    public function getTimeAgoAttribute()
+    {
+        return $this->created_at->diffForHumans();
+    }
 
     public function user(): BelongsTo
     {

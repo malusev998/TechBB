@@ -48,8 +48,8 @@ class RoleService
     {
         $redisConnection = $this->redis->getConnection();
 
-        if ($redisConnection->exists('roles')) {
-            return $redisConnection->get('roles');
+        if (($roles = $redisConnection->get('roles'))) {
+            return $roles;
         }
 
         $roles = Role::all();

@@ -15,6 +15,8 @@ use App\Dto\Blog\SearchPostsDto;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
+use function dd;
+
 
 class PostService
 {
@@ -31,8 +33,9 @@ class PostService
 
         $key = "posts:{$page}:{$perPage}".($category !== null ? ":$category" : '');
 
-        if ($connection->exists($key)) {
-            return $connection->get($key);
+
+        if (($data = $connection->get($key))) {
+            return $data;
         }
 
         $posts = Post::with(
@@ -48,9 +51,11 @@ class PostService
                 },
             ]
         )
-            ->where('status', 'published')->paginate($perPage, ['*'], 'page', $page);
+            ->where('status', 'published')
+            ->paginate($perPage, ['*'], 'page', $page);
 
-        $connection->setex($key, CarbonInterval::hour()->seconds, $posts);
+
+        $connection->setex($key, CarbonInterval::hour()->totalSeconds, $posts);
 
         return $posts;
     }
@@ -62,7 +67,7 @@ class PostService
         $data = PostsData::query()
             ->orderByDesc('COUNT(post_id)')
             ->whereNotNull('user_left')
-            ->where('user_left - created_at', '>', CarbonInterval::seconds(30))
+            ->where('user_left - created_at', '>', CarbonInterval::seconds(30)->totalSeconds)
             ->groupBy('post_id')
             ->limit($count)
             ->get();
@@ -72,7 +77,7 @@ class PostService
             ->where('status', '=', 'published')
             ->get();
 
-        $connection->setex('posts:popular', CarbonInterval::hour()->seconds, $posts);
+        $connection->setex('posts:popular', CarbonInterval::hour()->totalSeconds, $posts);
 
         return $posts;
     }
@@ -111,8 +116,34 @@ class PostService
         ];
     }
 
-    public function create(CreatePostDto $data, User $user)
+    /**
+     * @throws \Throwable
+     *
+     * @param  \App\Models\User  $user
+     * @param  \App\Dto\Blog\CreatePostDto  $data
+     *
+     * @return \App\Models\Post
+     */
+    public function create(CreatePostDto $data, User $user): Post
     {
+        $post = new Post(
+            [
+                'title'              => $data->title,
+                'status'             => $data->status,
+                'description'        => $data->description,
+                'number_of_likes'    => 0,
+                'number_of_comments' => 0,
+                'user_id'            => $user->getIdentifier(),
+            ]
+        );
+
+        $post->saveOrFail();
+
+        $categories = $data->categories ?? [];
+
+        $post->categories()->attach($categories);
+
+        return $post;
     }
 
     public function update(int $id, UpdatePostDto $data)

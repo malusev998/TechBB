@@ -26,13 +26,13 @@ class CategoryService
     {
         $connection = $this->redis->getConnection();
         $key = "categories:{$page}:{$perPage}";
-        if ($connection->exists($key)) {
-            return $connection->get($key);
+        if (($data = $connection->get($key))) {
+            return $data;
         }
 
         $categories = Category::query()->paginate($perPage, ['*'], 'page', $page);
 
-        $connection->setex($key, CarbonInterval::minutes(15)->seconds, $categories);
+        $connection->setex($key, CarbonInterval::minutes(15)->totalSeconds, $categories);
 
         return $categories;
     }
@@ -40,8 +40,8 @@ class CategoryService
     public function getPopular(int $count)
     {
         $connection = $this->redis->getConnection();
-        if ($connection->exists('popular_categories')) {
-            return $connection->get('popular_categories');
+        if (($data = $connection->get('popular_categories'))) {
+            return $data;
         }
 
         $categories = Category::query()
@@ -76,7 +76,6 @@ class CategoryService
     public function calculateNumberOfPosts(): void
     {
         $connection = $this->manager->getConnection();
-        // SELECT category_id, COUNT(post_id) FROM category_posts GROUP BY category_id
         $data = $connection->query()
             ->selectRaw('COUNT(post_id) as count')
             ->addSelect('category_id')

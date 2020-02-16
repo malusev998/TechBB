@@ -40,14 +40,17 @@ class CategoryService
     public function getPopular(int $count)
     {
         $connection = $this->redis->getConnection();
+
         if (($data = $connection->get('popular_categories'))) {
             return $data;
         }
 
         $categories = Category::query()
             ->orderByDesc('number_of_posts')
-            ->limit($count);
-        $connection->setex('popular_categories', CarbonInterval::hour(1)->seconds, $categories,);
+            ->orderByDesc('updated_at')
+            ->limit($count)
+            ->get();
+        $connection->setex('popular_categories', CarbonInterval::hour(1)->seconds, $categories);
 
         return $categories;
     }

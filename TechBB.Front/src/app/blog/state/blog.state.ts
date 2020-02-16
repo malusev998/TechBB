@@ -8,6 +8,9 @@ import { GetPopularPostsAction } from "../actions/get-popular-posts.action";
 import { tap, map } from "rxjs/operators";
 import { PostsPaginationResponse, BlogStateType } from "../types";
 import { Injectable } from "@angular/core";
+import { CategoryService } from "src/app/shared/services/category.service";
+import { GetPopularCategoriesAction } from '../actions/get-popular-categories.action';
+import { Category } from 'src/app/shared/models/category.model';
 
 @State<BlogStateType>({
   name: "home",
@@ -19,7 +22,10 @@ import { Injectable } from "@angular/core";
 })
 @Injectable()
 export class BlogState {
-  public constructor(private readonly postService: PostsService) {}
+  public constructor(
+    private readonly postService: PostsService,
+    private readonly categoryService: CategoryService
+  ) {}
 
   @Action(GetPostsAction)
   public getPosts(ctx: StateContext<BlogStateType>, action: GetPostsAction) {
@@ -42,7 +48,6 @@ export class BlogState {
     action: GetPopularPostsAction
   ) {
     return this.postService.getPopularPosts(action.count).pipe(
-      map((data: HttpResponse<Post[]>) => data.body),
       tap((posts: Post[]) => {
         context.setState({
           ...context.getState(),
@@ -50,6 +55,22 @@ export class BlogState {
         });
       })
     );
+  }
+
+  @Action(GetPopularCategoriesAction)
+  public getPopularCategories(
+    context: StateContext<BlogStateType>,
+    action: GetPopularCategoriesAction
+  ) {
+    return this.categoryService.getPopularCategories(action.count)
+      .pipe(
+        tap((data: Category[]) => {
+          context.setState({
+            ...context.getState(),
+            popularCategories: data
+          })
+        })
+      );
   }
 
   public search() {}

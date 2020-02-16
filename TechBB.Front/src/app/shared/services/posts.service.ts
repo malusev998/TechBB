@@ -24,7 +24,7 @@ export class PostsService {
   }
 
   public getPopularPosts(count: number) {
-    return this.httpClient.get("/posts/popular", {
+    return this.httpClient.get("/popular/posts", {
       params: { count: count.toString() }
     });
   }

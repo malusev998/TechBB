@@ -24,7 +24,7 @@ return static function (RoutingConfigurator $routes) {
     // Subscriptions
 
     $routes->add('subscribe', '/subscribe')
-        ->methods(['POST'])
+        ->methods(['POST', 'OPTIONS'])
         ->controller('SubscribeController@subscribe');
 
     $routes->add('unsubscribe', '/unsubscribe')
@@ -68,12 +68,15 @@ return static function (RoutingConfigurator $routes) {
     $routes->add('get_categories', '/categories')
         ->methods(['GET'])
         ->controller('Blog\\CategoryController@get');
+
     $routes->add('get_category', '/categories/{id}')
         ->methods(['GET'])
         ->controller('Blog\\CategoryController@getOne');
-    $routes->add('get_popular_categories', '/categories')
+
+    $routes->add('get_popular_categories', '/popular/categories')
         ->methods(['GET'])
         ->controller('Blog\\CategoryController@getPopular');
+
     $routes->add('create_category', '/categories')
         ->methods(['POST'])
         ->controller('Blog\\CategoryController@create');
@@ -92,6 +95,10 @@ return static function (RoutingConfigurator $routes) {
     $routes->add('get_post', '/posts/{id}')
         ->methods(['GET'])
         ->controller('Blog\\PostController@getOne');
+
+    $routes->add('get_popular_posts', '/popular/posts')
+        ->methods(['GET'])
+        ->controller('Blog\\PostController@getPopular');
 
     $routes->add('search_posts', '/posts/search')
         ->methods(['POST'])

@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 use function dd;
+use function header;
 use function in_array;
 use function array_flip;
 
@@ -31,12 +32,14 @@ class CorsMiddleware implements Middleware
         $methods = $this->container->get('allowed_methods');
         $headers = $this->container->get('allowed_headers');
         $maxAge = $this->container->get('max_age');
+
         if (!isset($origins[0])) {
             $origins[0] = '*';
         }
 
+        $validMethod = ($methods[0] !== '*' && !in_array($request->getMethod(), $methods, true));
 
-        if (!in_array($request->getMethod(), $methods, true) || ($origins[0] !== '*' && !in_array
+        if ($validMethod || ($origins[0] !== '*' && !in_array
                 (
                     $request->getSchemeAndHttpHost(),
                     $origins,
@@ -44,6 +47,21 @@ class CorsMiddleware implements Middleware
                 ))) {
             throw new CorsException();
         }
+
+
+        if ($request->isMethod('OPTIONS')) {
+            $this->setHeader(
+                [
+                    'Access-Control-Allow-Origin'  => $origins,
+                    'Access-Control-Allow-Methods' => $methods,
+                    'Access-Control-Allow-Headers' => $headers,
+                    'Access-Control-Max-Age'       => $maxAge,
+                ]
+            );
+            exit();
+        }
+
+
         $response = $next($request);
 
         if ($response instanceof Response) {
@@ -54,5 +72,14 @@ class CorsMiddleware implements Middleware
         }
 
         return $response;
+    }
+
+    private function setHeader(array $values)
+    {
+        foreach ($values as $header => $headerValues) {
+            foreach ($headerValues as $value) {
+                header("{$header}: {$value}", false);
+            }
+        }
     }
 }

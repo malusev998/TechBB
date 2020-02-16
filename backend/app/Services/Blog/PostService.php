@@ -15,8 +15,6 @@ use App\Dto\Blog\SearchPostsDto;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
-use function dd;
-
 
 class PostService
 {
@@ -64,18 +62,31 @@ class PostService
     {
         $connection = $this->redis->getConnection();
         // Most visits on post desc in last month, user left - created_at > 30 seconds
-        $data = PostsData::query()
-            ->orderByDesc('COUNT(post_id)')
-            ->whereNotNull('user_left')
-            ->where('user_left - created_at', '>', CarbonInterval::seconds(30)->totalSeconds)
-            ->groupBy('post_id')
-            ->limit($count)
-            ->get();
+        if (PostsData::query()->count() > 0) {
+            // TODO: needs testing and some bug fixes
+            $data = PostsData::query()
+                ->orderByDesc('COUNT(post_id)')
+                ->whereNotNull('user_left')
+                // FIXME: fix here
+                ->where('user_left - created_at', '>', CarbonInterval::seconds(30)->totalSeconds)
+                ->groupBy('post_id')
+                ->limit($count)
+                ->get();
 
-        $posts = Post::with($this->with())
-            ->whereIn('id', '=', $data->pluck('post_id'))
-            ->where('status', '=', 'published')
-            ->get();
+            $posts = Post::with($this->with())
+                ->whereIn('id', '=', $data->pluck('post_id'))
+                ->where('status', '=', 'published')
+                ->get();
+        } else {
+            $posts = Post::with(($this->with()))
+                ->where('status', '=', 'published')
+                ->orderByDesc('created_at')
+                ->orderByDesc('number_of_likes')
+                ->orderByDesc('number_of_comments')
+                ->limit($count)
+                ->get();
+        }
+
 
         $connection->setex('posts:popular', CarbonInterval::hour()->totalSeconds, $posts);
 
@@ -96,10 +107,11 @@ class PostService
 
         $builder->where('title', 'LIKE', $data->term);
 
-        if (isset($data->orderBy)) {
-        }
-
         $builder->orderByDesc('created_at');
+
+        if (isset($data->orderBy)) {
+            $builder->orderBy($data->orderBy->column, $data->orderBy->direction);
+        }
 
         return $builder->paginate($data->perPage, ['*'], 'page', $data->page);
     }

@@ -82,33 +82,34 @@ class ActionResolver implements Resolver
             $this->pipeline
         );
 
-        $params = $reflectionMethod->getParameters();
 
-        $invokeParams = [];
-
-        foreach ($params as $param) {
-            $paramName = $param->getName();
-            if ($param->hasType()) {
-                $paramType = $param->getType();
-            }
-
-            if ($paramName === 'request' || (isset($paramType) && $paramType->getName() === Request::class)) {
-                $invokeParams[] = $this->request;
-            }
-
-
-            if (($class = $param->getClass()) && ($parent = $class->getParentClass()) && $parent->getName() ===
-                                                                                         BaseDto::class) {
-                $invokeParams[] = (new DtoValidate($container, $this->request))->validate($paramType);
-            }
-
-            if (isset($this->params[$paramName])) {
-                $invokeParams[] = $this->params[$paramName];
-            }
-        }
         return $this->pipeline->handleQueue($this->pipelineName)->handle(
             $this->request,
-            function () use ($invokeParams, $reflectionMethod) {
+            function () use ($reflectionMethod, $container) {
+                $params = $reflectionMethod->getParameters();
+
+                $invokeParams = [];
+
+                foreach ($params as $param) {
+                    $paramName = $param->getName();
+                    if ($param->hasType()) {
+                        $paramType = $param->getType();
+                    }
+
+                    if ($paramName === 'request' || (isset($paramType) && $paramType->getName() === Request::class)) {
+                        $invokeParams[] = $this->request;
+                    }
+
+
+                    if (($class = $param->getClass()) && ($parent = $class->getParentClass()) && $parent->getName() ===
+                                                                                                 BaseDto::class) {
+                        $invokeParams[] = (new DtoValidate($container, $this->request))->validate($paramType);
+                    }
+
+                    if (isset($this->params[$paramName])) {
+                        $invokeParams[] = $this->params[$paramName];
+                    }
+                }
                 return $reflectionMethod->invokeArgs($this->controllerInstance, $invokeParams);
             }
         );

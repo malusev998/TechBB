@@ -3,7 +3,7 @@
     <img class="post-img img-fluid" src="assets/img/posts/p1.jpg" alt="" />
   </figure>
   <h3>
-    <a routerLink="['/blog', post.id]">{{ post.title }} </a>
+    <a [routerLink]="['/blog', post.id]">{{ post.title }} </a>
   </h3>
   <p>{{ post.description.substring(0, 200) }} ...</p>
   <a routerLink="['/blog', post.id]" class="primary-btn text-uppercase mt-15"

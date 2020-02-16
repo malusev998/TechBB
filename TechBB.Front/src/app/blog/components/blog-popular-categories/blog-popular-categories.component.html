@@ -1,9 +1,6 @@
 <div class="single-widget category-widget">
   <h4 class="title">Popular categories</h4>
   <ul>
-    <app-blog-popular-category></app-blog-popular-category>
-    <app-blog-popular-category></app-blog-popular-category>
-    <app-blog-popular-category></app-blog-popular-category>
-    <app-blog-popular-category></app-blog-popular-category>
+    <app-blog-popular-category *ngFor="let category of categories | async" [category]="category"></app-blog-popular-category>
   </ul>
 </div>

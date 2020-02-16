@@ -1,6 +1,5 @@
 import { Component, OnInit } from "@angular/core";
 import { Store, Select } from "@ngxs/store";
-import { BlogState } from "src/app/blog/state/blog.state";
 import { Observable } from "rxjs";
 import { Post } from "src/app/shared/models/post.model";
 import { GetPostsAction } from "src/app/blog/actions/get-posts.action";
@@ -17,6 +16,6 @@ export class BlogPostsContainerComponent implements OnInit {
   constructor(private readonly store: Store) {}
 
   ngOnInit(): void {
-    this.posts.subscribe(data => console.log(data));
+    this.store.dispatch(new GetPostsAction(1, 4, null));
   }
 }

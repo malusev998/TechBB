@@ -3,17 +3,11 @@
     <img class="post-img img-fluid" src="assets/img/posts/p1.jpg" alt="" />
   </figure>
   <h3>
-    <a href="blog-details.html"
-      >It's Hurricane Season But We Are Visiting Hilton Island</a
-    >
+    <a routerLink="['/blog', post.id]">{{ post.title }} </a>
   </h3>
-  <p>
-    orem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-    tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-    quis nostrud exercitation ullamco laboris nisi ut aliquip.
-  </p>
-  <a href="blog-details.html" class="primary-btn text-uppercase mt-15"
+  <p>{{ post.description.substring(0, 200) }} ...</p>
+  <a routerLink="['/blog', post.id]" class="primary-btn text-uppercase mt-15"
     >continue Reading</a
   >
-  <app-blog-post-box></app-blog-post-box>
+  <app-blog-post-box [post]="post"></app-blog-post-box>
 </div>

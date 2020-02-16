@@ -7,36 +7,38 @@
     </div>
     <div class="post-meta">
       <div class="meta-head">
-        <a href="#">Marvel Maison</a>
+        <a href="mailto:{{ post?.user?.email }}"
+          >{{ post?.user.name }} {{ post?.user.surname }}</a
+        >
       </div>
-      <div class="meta-details">
-        <ul>
-          <li>
-            <a href="#">
-              <span class="lnr lnr-calendar-full"></span>
-              13th Oct, 2018
-            </a>
-          </li>
-          <li>
-            <a href="#">
-              <span class="lnr lnr-picture"></span>
-              Image Post
-            </a>
-          </li>
-          <li>
-            <a href="#">
-              <span class="lnr lnr-coffee-cup"></span>
-              Food & Travel
-            </a>
-          </li>
-          <li>
-            <a href="#">
-              <span class="lnr lnr-bubble"></span>
-              03 Comments
-            </a>
-          </li>
-        </ul>
-      </div>
+    </div>
+    <div class="meta-details">
+      <ul>
+        <li>
+          <a href="#">
+            <span class="lnr lnr-calendar-full"></span>
+            {{ post.time_ago }}
+          </a>
+        </li>
+        <li *ngFor="let category of post.categories">
+          <a href="#">
+            <span class="lnr lnr-picture"></span>
+            {{ category.name }}
+          </a>
+        </li>
+        <li>
+          <a href="#">
+            <span class="lnr lnr-bubble"></span>
+            {{ post.number_of_comments }} Comments
+          </a>
+        </li>
+        <li>
+          <a href="#">
+            <span class="lnr lnr-bubble"></span>
+            {{ post.number_of_likes }} Likes
+          </a>
+        </li>
+      </ul>
     </div>
   </div>
 </div>

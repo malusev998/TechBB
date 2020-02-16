@@ -1,15 +1,17 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from "@angular/core";
+import { Post } from "src/app/shared/models/post.model";
 
 @Component({
-  selector: 'app-blog-post',
-  templateUrl: './blog-post.component.html',
-  styleUrls: ['./blog-post.component.scss']
+  selector: "app-blog-post",
+  templateUrl: "./blog-post.component.html",
+  styleUrls: ["./blog-post.component.scss"]
 })
 export class BlogPostComponent implements OnInit {
+  @Input()
+  public post: Post;
 
-  constructor() { }
+  constructor() {}
 
   ngOnInit(): void {
   }
-
 }

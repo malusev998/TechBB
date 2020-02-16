@@ -26,7 +26,7 @@ export class BlogState {
     return this.postService
       .getPosts(action.page, action.perPage, action.category)
       .pipe(
-        map((data: HttpResponse<PostsPaginationResponse>) => data.body.data),
+        map((res: PostsPaginationResponse) => res.data),
         tap((posts: Post[]) => {
           ctx.setState({
             ...ctx.getState(),

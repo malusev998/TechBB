@@ -1,0 +1,18 @@
+/* You can add global styles to this file, and also import other style files */
+$fa-font-path: "../node_modules/font-awesome/fonts";
+@import "~font-awesome/scss/font-awesome";
+@import "~bootstrap/scss/bootstrap";
+
+// including variables and mixins
+@import "theme/variables";
+@import "theme/mixins";
+@import "theme/flexbox";
+@import "theme/reset";
+@import "theme/predefined";
+
+// Custom Scss
+@import "theme/elements";
+@import "theme/header";
+@import "theme/home";
+@import "theme/pages";
+@import "theme/footer";

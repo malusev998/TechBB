@@ -1,0 +1,40 @@
+<div class="single-widget newsletter-widget">
+  <h4 class="title">Newsletter</h4>
+  <div id="mc_embed_signup">
+    <form
+      [formGroup]="subscriptionForm"
+      (validSubmit)="subscribe()"
+      *ngIf="!hasSubscribed"
+    >
+      <div class="form-group" style="width: 100%">
+        <input
+          name="name"
+          formControlName="name"
+          placeholder="Name"
+          type="text"
+        />
+        <bfv-messages></bfv-messages>
+      </div>
+      <div class="form-group" style="width: 100%">
+        <input
+          name="email"
+          formControlName="email"
+          placeholder="Email Address"
+          type="email"
+        />
+        <bfv-messages></bfv-messages>
+      </div>
+      <button class="primary-btn text-uppercase">
+        Subscribe Now
+        <span class="lnr lnr-arrow-right"></span>
+      </button>
+      <div class="info"></div>
+    </form>
+    <alert type="success" *ngIf="hasSubscribed">
+      <strong>Well done!</strong> You successfully read this important alert
+      message.
+    </alert>
+  </div>
+
+  <swal #message title="" text="" icon="success"> </swal>
+</div>

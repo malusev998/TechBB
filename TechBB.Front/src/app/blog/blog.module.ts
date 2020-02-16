@@ -17,6 +17,9 @@ import { SharedModule } from "../shared/shared.module";
 import { NgBootstrapFormValidationModule } from "ng-bootstrap-form-validation";
 import { AlertModule } from "ngx-bootstrap/alert";
 import { SweetAlert2Module } from "@sweetalert2/ngx-sweetalert2";
+import { NgxsModule } from "@ngxs/store";
+import { BlogState } from "./state/blog.state";
+import { PaginatedPostsState } from "./state/paginated-posts.state";
 
 const routes: Routes = [
   {
@@ -50,7 +53,8 @@ const routes: Routes = [
     SharedModule,
     RouterModule.forChild(routes),
     AlertModule,
-    SweetAlert2Module
+    SweetAlert2Module,
+    NgxsModule.forFeature([BlogState, PaginatedPostsState])
   ],
   exports: [RouterModule]
 })

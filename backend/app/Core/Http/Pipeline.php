@@ -6,49 +6,76 @@ namespace App\Core\Http;
 
 use Closure;
 use SplQueue;
+use RuntimeException;
 use App\Core\Contracts\Middleware;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class Pipeline implements Middleware
 {
-    protected SplQueue $middleware;
+
+
+    protected array $middleware = [];
+
+    protected string $handleQueue = '';
 
     public function __construct()
     {
-        $this->middleware = new SplQueue();
     }
 
-    public function addMiddleware(Middleware $middleware): Pipeline
+    public function addMiddleware(string $name, Middleware $middleware): Pipeline
     {
-        $this->middleware->enqueue($middleware);
+        $this->initQueue($name);
+        $this->middleware[$name]->enqueue($middleware);
         return $this;
     }
 
 
     public function handle(Request $request, Closure $next)
     {
-        if ($this->middleware->isEmpty()) {
+        /** @var SplQueue $middlewareStack */
+        $middlewareStack = $this->middleware[$this->handleQueue];
+
+        if (!isset($middlewareStack)) {
+            throw new RuntimeException("{$this->handleQueue} is not set");
+        }
+
+        if ($middlewareStack->isEmpty()) {
             return $next($request);
         }
 
-        $response = null;
-        $current = $this->middleware->dequeue();
+        $current = $middlewareStack->dequeue();
 
         $response = $current->handle(
             $request,
-            Closure::bind(
-                function ($request) use ($next) {
-                    return $this->handle($request, $next);
-                },
-                $this
-            )
+            Closure::bind(fn($request) => $this->handle($request, $next), $this)
         );
+
 
         if ($response instanceof Response) {
             return $response;
         }
 
         return $response;
+    }
+
+    public function handleQueue(string $queue): Pipeline
+    {
+        $this->handleQueue = $queue;
+        return $this;
+    }
+
+    /**
+     * @param  string  $name
+     *
+     * @return \App\Core\Http\Pipeline
+     */
+    public function initQueue(string $name): Pipeline
+    {
+        if (!isset($this->middleware[$name])) {
+            $this->middleware[$name] = new SplQueue();
+        }
+
+        return $this;
     }
 }

@@ -12,6 +12,6 @@ class Kernel extends CoreKernel
     {
         $this->router
             ->web()
-            ->api();
+            ->api(['cors']);
     }
 }

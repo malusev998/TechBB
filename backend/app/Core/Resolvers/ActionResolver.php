@@ -28,14 +28,26 @@ class ActionResolver implements Resolver
 
     protected string $action;
 
+    protected Pipeline $pipeline;
+
     protected array $params = [];
 
     protected Request $request;
 
-    public function __construct(?object $controllerInstance, string $action, Request $request, array $params = [])
-    {
+    protected string $pipelineName;
+
+    public function __construct(
+        ?object $controllerInstance,
+        string $pipelineName,
+        string $action,
+        Request $request,
+        Pipeline $pipeline,
+        array $params = []
+    ) {
+        $this->pipelineName = $pipelineName;
         $this->controllerInstance = $controllerInstance;
         $this->action = $action;
+        $this->pipeline = $pipeline;
         $this->request = $request;
         $this->params = $params;
     }
@@ -61,13 +73,13 @@ class ActionResolver implements Resolver
 
         $reflectionMethod = new ReflectionMethod($this->controllerInstance, $this->action);
 
-        $pipeline = new Pipeline();
+        // $pipeline = new Pipeline();
 
         $this->handleAnnotations(
             new ReflectionClass($this->controllerInstance),
             $reflectionMethod,
             $container,
-            $pipeline
+            $this->pipeline
         );
 
         $params = $reflectionMethod->getParameters();
@@ -94,7 +106,7 @@ class ActionResolver implements Resolver
                 $invokeParams[] = $this->params[$paramName];
             }
         }
-        return $pipeline->handle(
+        return $this->pipeline->handleQueue($this->pipelineName)->handle(
             $this->request,
             function () use ($invokeParams, $reflectionMethod) {
                 return $reflectionMethod->invokeArgs($this->controllerInstance, $invokeParams);
@@ -219,7 +231,7 @@ class ActionResolver implements Resolver
         foreach ($annotations as $annotation) {
             if ($annotation instanceof Middleware) {
                 foreach ($annotation->middleware as $m) {
-                    $pipeline->addMiddleware($container->get($m));
+                    $pipeline->addMiddleware($this->pipelineName, $container->get($m));
                 }
             }
         }

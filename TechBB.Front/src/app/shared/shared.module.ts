@@ -3,6 +3,7 @@ import { CommonModule } from "@angular/common";
 import { HttpClientModule, HTTP_INTERCEPTORS } from "@angular/common/http";
 import { InterceptorService } from "./services/interceptors/http.interceptor.service";
 import { SubscriptionService } from "./services/subscription.service";
+import { PostsService } from './services/posts.service';
 
 @NgModule({
   declarations: [],
@@ -11,7 +12,8 @@ import { SubscriptionService } from "./services/subscription.service";
   providers: [
     { provide: HTTP_INTERCEPTORS, multi: true, useClass: InterceptorService },
     SubscriptionService,
-    InterceptorService
+    InterceptorService,
+    PostsService
   ]
 })
 export class SharedModule {}

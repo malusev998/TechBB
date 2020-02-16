@@ -9,12 +9,15 @@ $loader = require __DIR__.'/../vendor/autoload.php';
 
 AnnotationRegistry::registerLoader([$loader, 'loadClass']);
 
+try {
+    $dotnev = new EnvParser(__DIR__.'/../.env');
+    $kernel = (new Kernel())
+        ->setEnvironment(getApplicationEnvironment());
 
-$dotnev = new EnvParser(__DIR__.'/../.env');
-$kernel = (new Kernel())
-    ->setEnvironment(getApplicationEnvironment());
 
-$dotnev->parse();
-$dotnev->loadIntoENV();
-$kernel->run();
-
+    $dotnev->parse();
+    $dotnev->loadIntoENV();
+    $kernel->run();
+} catch (Throwable| Error $e) {
+    echo $e->getMessage();
+}

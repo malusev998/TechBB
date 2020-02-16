@@ -52,5 +52,7 @@ class CorsMiddleware implements Middleware
             $response->headers->set('Access-Control-Allow-Headers', $headers);
             $response->headers->set('Access-Control-Max-Age', $maxAge);
         }
+
+        return $response;
     }
 }

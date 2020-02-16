@@ -8,6 +8,9 @@ import { ReactiveFormsModule } from "@angular/forms";
 import { SweetAlert2Module } from "@sweetalert2/ngx-sweetalert2";
 import { NgxsModule } from "@ngxs/store";
 import { environment } from "src/environments/environment";
+import { AuthState } from "./auth/state/auth.state";
+import { SharedModule } from "./shared/shared.module";
+import { AuthModule } from "./auth/auth.module";
 
 @NgModule({
   declarations: [AppComponent],
@@ -18,7 +21,10 @@ import { environment } from "src/environments/environment";
     NgBootstrapFormValidationModule.forRoot(),
     AlertModule.forRoot(),
     SweetAlert2Module.forRoot(),
-    NgxsModule.forRoot([], { developmentMode: !environment.production })
+    SharedModule,
+    NgxsModule.forRoot([AuthState], {
+      developmentMode: !environment.production
+    })
   ],
   providers: [],
   bootstrap: [AppComponent]

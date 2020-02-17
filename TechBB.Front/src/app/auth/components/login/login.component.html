@@ -1,1 +1,26 @@
-<p>login works!</p>
+<div class="row justify-content-center">
+  <div class="col-md-5">
+    <div class="wrapper fadeInDown">
+      <div id="formContent">
+        <!-- Tabs Titles -->
+        <!-- Login Form -->
+        <form [formGroup]="loginForm" (validSubmit)="login()">
+          <div class="form-group">
+          <input
+            type="email" formControlName="email" id="login" class="fadeIn second input" name="login" placeholder="Email">
+          </div>
+          <div class="form-group">
+            <input type="password" formControlName="password" id="password" class="fadeIn third input" name="login"
+                 placeholder="Password">
+          </div>
+          <input type="submit" class="fadeIn fourth" value="Log In">
+        </form>
+
+        <!-- Remind Passowrd -->
+        <!--        <div id="formFooter">-->
+        <!--          <a class="underlineHover" href="#">Forgot Password?</a>-->
+        <!--        </div>-->
+      </div>
+    </div>
+  </div>
+</div>

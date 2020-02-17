@@ -10,11 +10,11 @@ return static function (RoutingConfigurator $routes) {
     // Auth
 
     $routes->add('login', '/login')
-        ->methods(['POST'])
+        ->methods(['POST', 'OPTIONS'])
         ->controller('Auth\LoginController@login');
 
     $routes->add('register', '/register')
-        ->methods(['POST'])
+        ->methods(['POST', 'OPTIONS'])
         ->controller('Auth\RegisterController@register');
 
     $routes->add('profile', '/profile')
@@ -28,7 +28,7 @@ return static function (RoutingConfigurator $routes) {
         ->controller('SubscribeController@subscribe');
 
     $routes->add('unsubscribe', '/unsubscribe')
-        ->methods(['DELETE'])
+        ->methods(['DELETE', 'OPTIONS'])
         ->controller('SubscribeController@unsubscribe');
 
     // Subjects
@@ -37,19 +37,19 @@ return static function (RoutingConfigurator $routes) {
         ->methods(['GET'])
         ->controller('SubjectController@get');
     $routes->add('update_subjects', '/subjects/{id}')
-        ->methods(['PATCH'])
+        ->methods(['PATCH', 'OPTIONS'])
         ->controller('SubjectController@update');
     $routes->add('delete_subjects', '/subjects/{id}')
-        ->methods(['DELETE'])
+        ->methods(['DELETE', 'OPTIONS'])
         ->controller('SubjectController@delete');
     $routes->add('create_subject', '/subjects')
-        ->methods(['POST'])
+        ->methods(['POST', 'OPTIONS'])
         ->controller('SubjectController@create');
 
     // Contact
 
     $routes->add('get_messages', '/messages')
-        ->methods(['POST'])
+        ->methods(['POST', 'OPTIONS'])
         ->controller('ContactController@paginate');
 
     $routes->add('get_message', '/messages/{id}')
@@ -57,11 +57,11 @@ return static function (RoutingConfigurator $routes) {
         ->controller('ContactController@get');
 
     $routes->add('contact', '/contact')
-        ->methods(['POST'])
+        ->methods(['POST', 'OPTIONS'])
         ->controller('ContactController@contact');
 
     $routes->add('delete_message', '/message/{id}')
-        ->methods(['DELETE'])
+        ->methods(['DELETE', 'OPTIONS'])
         ->controller('ContactController@delete');
 
     // Categories
@@ -78,13 +78,13 @@ return static function (RoutingConfigurator $routes) {
         ->controller('Blog\\CategoryController@getPopular');
 
     $routes->add('create_category', '/categories')
-        ->methods(['POST'])
+        ->methods(['POST', 'OPTIONS'])
         ->controller('Blog\\CategoryController@create');
     $routes->add('update_category', '/categories')
-        ->methods(['PATCH'])
+        ->methods(['PATCH', 'OPTIONS'])
         ->controller('Blog\\CategoryController@update');
     $routes->add('delete_category', '/categories/{id}')
-        ->methods(['DELETE'])
+        ->methods(['DELETE', 'OPTIONS'])
         ->controller('Blog\\CategoryController@delete');
     // Posts
 
@@ -101,18 +101,18 @@ return static function (RoutingConfigurator $routes) {
         ->controller('Blog\\PostController@getPopular');
 
     $routes->add('search_posts', '/posts/search')
-        ->methods(['POST'])
+        ->methods(['POST', 'OPTIONS'])
         ->controller('Blog\\PostController@search');
 
     $routes->add('add_post', '/posts')
-        ->methods(['POST'])
+        ->methods(['POST', 'OPTIONS'])
         ->controller('Blog\\PostController@create');
 
     $routes->add('update_post', '/posts/{id}')
-        ->methods(['PATCH'])
+        ->methods(['PATCH', 'OPTIONS'])
         ->controller('Blog\\PostController@update');
 
     $routes->add('delete_post', '/posts/{id}')
-        ->methods(['DELETE'])
+        ->methods(['DELETE', 'OPTIONS'])
         ->controller('Blog\\PostController@delete');
 };

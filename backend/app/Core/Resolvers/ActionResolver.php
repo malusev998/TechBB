@@ -73,8 +73,6 @@ class ActionResolver implements Resolver
 
         $reflectionMethod = new ReflectionMethod($this->controllerInstance, $this->action);
 
-        // $pipeline = new Pipeline();
-
         $this->handleAnnotations(
             new ReflectionClass($this->controllerInstance),
             $reflectionMethod,

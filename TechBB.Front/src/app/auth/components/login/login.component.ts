@@ -6,7 +6,7 @@ import { Select, Store } from '@ngxs/store';
 import { Observable, Subscription } from 'rxjs';
 import { User } from '../../../shared/models/user.model';
 import { TitleService } from '../../../shared/services/title.service';
-import { LoginAction, SetUserAction } from '../../actions';
+import { LoginAction } from '../../actions';
 import { ClearErrorsAction } from '../../actions/clear-errors.action';
 
 @Component({
@@ -40,7 +40,6 @@ export class LoginComponent implements OnInit, OnDestroy {
 
     this.subscription = this.user$.subscribe(user => {
       if ( user ) {
-        this.store.dispatch(new SetUserAction());
         this.router.navigateByUrl('/');
       }
     });
@@ -53,6 +52,8 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   public login(): void {
+    // console.log(event);
+    // event.preventDefault();
     this.store.dispatch(new LoginAction({
       email: this.email.value,
       password: this.password.value

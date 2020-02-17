@@ -4,7 +4,7 @@
       <div id="formContent">
         <!-- Tabs Titles -->
         <!-- Login Form -->
-        <form [formGroup]="loginForm" (validSubmit)="login()">
+        <form [formGroup]="loginForm" (validSubmit)="login($event)">
           <div class="form-group">
           <input
             type="email" formControlName="email" id="login" class="fadeIn second input" name="login" placeholder="Email">

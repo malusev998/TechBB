@@ -1,7 +1,7 @@
-import { Post } from "src/app/shared/models/post.model";
-import { Category } from "src/app/shared/models/category.model";
+import { Post } from 'src/app/shared/models/post.model';
+import { Category } from 'src/app/shared/models/category.model';
 
-export type PostsPaginationResponse = {
+export interface PostsPaginationResponse {
   current_page: number;
   data: Post[];
   first_page_url: string;
@@ -11,18 +11,19 @@ export type PostsPaginationResponse = {
   next_page_url: string;
   per_page: number;
   total: number;
-};
+}
 
-export type PaginatedPostsType = {
+export interface PaginatedPostsType {
   posts: Post[];
   total: number;
   currentPage: number;
   lastPage: number;
   perPage: number;
-};
+}
 
-export type BlogStateType = {
+export interface BlogStateType {
   posts: Post[];
   popularCategories: Category[];
   popularPosts: Post[];
-};
+  hasSubscribed: boolean;
+}

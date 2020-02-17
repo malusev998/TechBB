@@ -39,30 +39,21 @@ export class AuthState {
 
   @Action(LoginAction)
   public login( context: StateContext<AuthStateType>, action: LoginAction ) {
-    return this.loginService.login(action.payload).pipe(
-      tap(( data: AuthSuccessPayload ) => {
-        const jwt: Jwt = {
-          token: data.token,
-          type: data.type,
-          user: data.payload
-        };
-        localStorage.setItem('token', JSON.stringify(jwt));
-        context.setState({
-          errors: null,
-          user: data.payload
-        });
-      }),
-      catchError(( error ) => {
-        console.log(error);
-        // Handle all errors
-        return throwError(error);
-      })
-    );
+    return this.loginService.login(action.payload).subscribe(( data: any ) => {
+      const jwt: Jwt = {
+        token: data.token,
+        type: data.type,
+        user: data.payload
+      };
+
+      localStorage.setItem('token', JSON.stringify(jwt));
+      context.dispatch(new SetUserAction());
+    }, ( error ) => console.log(error));
   }
 
   @Action(LogoutAction)
   public logout( context: StateContext<AuthStateType>, action: LogoutAction ) {
-    context.setState({ errors: null, user: null });
+    context.setState({ ...context.getState(), errors: null, user: null });
     localStorage.removeItem('token');
   }
 
@@ -74,7 +65,8 @@ export class AuthState {
     if ( !data ) {
       context.setState({
         ...context.getState(),
-        user: null
+        user: null,
+        errors: null
       });
     } else {
       try {
@@ -84,14 +76,14 @@ export class AuthState {
 
         if ( hasExipired ) {
           localStorage.removeItem('token');
-          context.setState({ errors: null, user: null });
+          context.setState({ ...context.getState(), errors: null, user: null });
         } else {
-          context.setState({ errors: null, user: jwt.user });
+          context.setState({ ...context.getState(), errors: null, user: jwt.user });
         }
 
       } catch ( error ) {
         localStorage.removeItem('token');
-        context.setState({ errors: null, user: null });
+        context.setState({ ...context.getState(), errors: null, user: null });
       }
     }
 

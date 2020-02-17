@@ -1,14 +1,15 @@
-import { Injectable } from "@angular/core";
-import { HttpClient } from "@angular/common/http";
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { Login } from '../dto/login.dto';
 
 @Injectable({
-  providedIn: "root"
+  providedIn: 'root'
 })
 export class LoginService {
-  constructor(private httpClient: HttpClient) { }
+  constructor( private httpClient: HttpClient ) {
+  }
 
-  public login(data: Login) {
+  public login( data: Login ) {
     return this.httpClient.post('/login', data);
   }
 }

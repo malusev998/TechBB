@@ -6,6 +6,9 @@ import { RouterModule, Routes } from "@angular/router";
 import { SharedModule } from "../shared/shared.module";
 import { ContactService } from "./services/contact.service";
 import { SweetAlert2Module } from "@sweetalert2/ngx-sweetalert2";
+import { AgmCoreModule } from "@agm/core";
+import { ReactiveFormsModule } from '@angular/forms';
+import { NgBootstrapFormValidationModule } from 'ng-bootstrap-form-validation';
 
 const routes: Routes = [
   {
@@ -20,7 +23,10 @@ const routes: Routes = [
     CommonModule,
     RouterModule.forChild(routes),
     SharedModule,
-    SweetAlert2Module
+    SweetAlert2Module,
+    AgmCoreModule,
+    ReactiveFormsModule,
+    NgBootstrapFormValidationModule
   ],
   exports: [RouterModule],
   providers: [ContactService]

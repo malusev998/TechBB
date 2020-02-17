@@ -1,5 +1,6 @@
 import { BrowserModule } from "@angular/platform-browser";
 import { NgModule } from "@angular/core";
+import { AgmCoreModule } from "@agm/core";
 import { NgBootstrapFormValidationModule } from "ng-bootstrap-form-validation";
 import { AlertModule } from "ngx-bootstrap/alert";
 import { AppRoutingModule } from "./app-routing.module";
@@ -10,7 +11,6 @@ import { NgxsModule } from "@ngxs/store";
 import { environment } from "src/environments/environment";
 import { AuthState } from "./auth/state/auth.state";
 import { SharedModule } from "./shared/shared.module";
-import { AuthModule } from "./auth/auth.module";
 
 @NgModule({
   declarations: [AppComponent],
@@ -24,6 +24,9 @@ import { AuthModule } from "./auth/auth.module";
     SharedModule,
     NgxsModule.forRoot([AuthState], {
       developmentMode: !environment.production
+    }),
+    AgmCoreModule.forRoot({
+      apiKey: environment.googleMaps
     })
   ],
   providers: [],

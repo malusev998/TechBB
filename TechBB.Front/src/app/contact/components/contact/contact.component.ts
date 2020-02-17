@@ -8,6 +8,9 @@ import { Title } from "@angular/platform-browser";
   styleUrls: ["./contact.component.scss"]
 })
 export class ContactComponent implements OnInit {
+  public longitude: number = 51.678418;
+  public latitude: number = 7.809007;
+
   constructor(private titleService: TitleService, private title: Title) {}
 
   ngOnInit(): void {

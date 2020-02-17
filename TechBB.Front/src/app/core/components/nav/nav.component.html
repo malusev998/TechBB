@@ -3,7 +3,9 @@
     <li class="menu-active"><a routerLink="/">Home</a></li>
     <li><a routerLink="/blog">Blog</a></li>
     <li><a routerLink="/contact">Contact</a></li>
-    <li><a routerLink="/auth/register">Register</a></li>
-    <li><a routerLink="/auth/login">Login</a></li>
+    <li><a routerLink="/auth/register" *ngIf="user === null">Register</a></li>
+    <li><a routerLink="/auth/login" *ngIf="user === null">Login</a></li>
+    <li><a (click)="logout()" *ngIf="user !== null">Logout</a></li>
+    <li><a routerLink="/dashboard" *ngIf="user !== null">Dashboard</a></li>
   </ul>
 </nav>

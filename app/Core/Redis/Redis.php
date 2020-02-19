@@ -214,7 +214,7 @@ use App\Core\Contracts\Connection;
  *     all the keys were set (see SETNX).
  * @method array getMultiple(array $keys) Get the values of all the specified keys. If one or more keys dont exist, the
  *     array will contain FALSE at the position of the key.
- * @method array  mget(array $array) For every key that does not hold a string value or does not exist, the special
+ * @method array mget(array $array) For every key that does not hold a string value or does not exist, the special
  *     value false is returned. Because of this, the operation never fails.
  * @method string|mixed|bool rpoplpush(string $srcKey, string $dstKey) Pops a value from the tail of a list, and pushes
  *     it to the front of another list. Also return this value.
@@ -222,7 +222,7 @@ use App\Core\Contracts\Connection;
  *     with an integral timeout in the third parameter.
  * @method array zAdd(string $key, array  $options, float $score1, string|mixed $value1, ?float $score2 = null,  string|mixed|null $value2 = null, ?float $scoreN = null,string|mixed|null $valueN = null)
  */
-class Redis implements Connection
+class Redis implements Connection, RedisSerializer
 {
     private string $host;
     private int $port;
@@ -230,6 +230,8 @@ class Redis implements Connection
     private string $prefix;
 
     protected static int $refCount = 0;
+
+    private static int $defaultSerializer = RedisSerializer::JSON;
 
     protected static ?PhpRedis $connection = null;
 
@@ -306,7 +308,18 @@ class Redis implements Connection
     {
         $this->connect();
         static::$connection->setOption(PhpRedis::OPT_PREFIX, $this->prefix);
-        static::$connection->setOption(PhpRedis::OPT_SERIALIZER, PhpRedis::SERIALIZER_PHP);
+    }
+
+    public function setSerializer(int $option): void {
+        static::$connection->setOption(PhpRedis::OPT_SERIALIZER, $option);
+    }
+
+    public function getDefaultSerializer(): int {
+        return static::$defaultSerializer;
+    }
+
+    public function setDefaultSerializer(): void {
+        $this->setSerializer(static::$defaultSerializer);
     }
 
     public function __destruct()

@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Core\Http;
-
 
 use Closure;
 use SplQueue;

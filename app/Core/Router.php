@@ -16,8 +16,6 @@ class Router
 {
     protected RouteCollection $routes;
 
-//    protected static array $reservedKeys = ['_controller' => 1, '_route' => 2];
-
     public function __construct(RouteCollection $routes)
     {
         $this->routes = $routes;

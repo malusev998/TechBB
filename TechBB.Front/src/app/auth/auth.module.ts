@@ -8,6 +8,7 @@ import { RegisterComponent } from './components/register/register.component';
 import { RouterModule, Routes } from '@angular/router';
 import { SharedModule } from '../shared/shared.module';
 import { NgxsModule } from '@ngxs/store';
+import { ErrorComponent } from './components/error/error.component';
 
 const routes: Routes = [
   {
@@ -21,7 +22,7 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  declarations: [LayoutComponent, LoginComponent, RegisterComponent],
+  declarations: [LayoutComponent, LoginComponent, RegisterComponent, ErrorComponent],
   imports: [
     CommonModule,
     RouterModule.forChild(routes),
